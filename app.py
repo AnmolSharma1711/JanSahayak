@@ -256,15 +256,32 @@ def download_pdf(session_id):
         normal_style = styles['BodyText']
         normal_style.alignment = TA_JUSTIFY
         
-        # Title
-        elements.append(Paragraph("JanSahayak", title_style))
+        # Get user name for personalization
+        profile = result.get('user_profile', {})
+        user_name = profile.get('name', 'Citizen')
+        if user_name and user_name != 'Not Provided':
+            user_name = user_name.strip()
+        else:
+            user_name = 'Citizen'
+        
+        # Title with logo-like header
+        elements.append(Paragraph("🇮🇳 JanSahayak", title_style))
         elements.append(Paragraph("Government Benefits Analysis Report", styles['Heading3']))
-        elements.append(Spacer(1, 0.3*inch))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Personalized greeting
+        greeting = ParagraphStyle('Greeting', parent=styles['Normal'], fontSize=14, 
+                                 textColor=colors.HexColor('#374151'), spaceBefore=6, spaceAfter=12)
+        elements.append(Paragraph(f"<b>Prepared for: {user_name}</b>", greeting))
         
         # Timestamp
         timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
         elements.append(Paragraph(f"<i>Generated: {timestamp}</i>", styles['Normal']))
-        elements.append(Spacer(1, 0.5*inch))
+        
+        # Separator line
+        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Table([['_'*100]], colWidths=[6.5*inch]))
+        elements.append(Spacer(1, 0.4*inch))
         
         # User Profile Section
         elements.append(Paragraph("Your Profile", heading_style))
@@ -273,65 +290,109 @@ def download_pdf(session_id):
         if profile:
             profile_data = []
             for key, value in profile.items():
-                if key not in ['raw_profile', 'user_input'] and value != 'Not Provided':
+                if key not in ['raw_profile', 'user_input', 'error', 'note'] and value != 'Not Provided':
                     label = key.replace('_', ' ').title()
+                    # Format interests list properly
+                    if key == 'interests' and isinstance(value, list):
+                        value = ', '.join([v.title() for v in value])
                     profile_data.append([Paragraph(f"<b>{label}:</b>", normal_style), 
                                        Paragraph(str(value), normal_style)])
             
             if profile_data:
-                profile_table = Table(profile_data, colWidths=[2.5*inch, 4*inch])
+                profile_table = Table(profile_data, colWidths=[2.2*inch, 4.3*inch])
                 profile_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F3F4F6')),
-                    ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+                    ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#EEF2FF')),  # Label column
+                    ('BACKGROUND', (1, 0), (1, -1), colors.white),  # Value column
+                    ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1F2937')),
                     ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),  # Bold labels
+                    ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
                     ('FONTSIZE', (0, 0), (-1, -1), 10),
-                    ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-                    ('TOPPADDING', (0, 0), (-1, -1), 8),
-                    ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+                    ('TOPPADDING', (0, 0), (-1, -1), 10),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 12),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#D1D5DB')),
+                    ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')]),
                 ]))
                 elements.append(profile_table)
         
         elements.append(Spacer(1, 0.4*inch))
         
-        # Helper function to clean text
+        # Helper function to clean and format text
         def clean_text(text):
             if not text or not isinstance(text, str):
                 return "No information available"
+            # Skip if "Not requested by user"
+            if "Not requested by user" in text:
+                return None
             # Remove HTML tags
             text = re.sub(r'<[^>]+>', '', text)
-            # Remove excessive markdown
-            text = re.sub(r'###\s+', '\n', text)
-            text = re.sub(r'\*\*', '', text)
+            # Convert markdown headers to regular text with proper spacing
+            text = re.sub(r'###\s+(.+)', r'\n\1\n', text)
+            text = re.sub(r'##\s+(.+)', r'\n\1\n', text)
+            # Clean up bold markers
+            text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
+            # Clean up bullet points
+            text = re.sub(r'^\*\s+', '\u2022 ', text, flags=re.MULTILINE)
+            text = re.sub(r'^-\s+', '\u2022 ', text, flags=re.MULTILINE)
             return text.strip()
         
-        # Government Schemes Section
-        elements.append(Paragraph("Government Schemes for You", heading_style))
-        schemes_text = clean_text(result.get('scheme_recommendations', 'No recommendations available'))
-        for para in schemes_text.split('\n\n'):
-            if para.strip():
-                elements.append(Paragraph(para.strip(), normal_style))
-                elements.append(Spacer(1, 0.1*inch))
+        # Section style for better visual separation
+        section_box_style = ParagraphStyle(
+            'SectionBox',
+            parent=normal_style,
+            leftIndent=20,
+            rightIndent=20,
+            spaceBefore=6,
+            spaceAfter=6,
+            borderColor=colors.HexColor('#E5E7EB'),
+            borderWidth=1,
+            borderPadding=10,
+            backColor=colors.HexColor('#F9FAFB')
+        )
         
-        elements.append(Spacer(1, 0.3*inch))
+        # Government Schemes Section
+        schemes_text = clean_text(result.get('scheme_recommendations', 'No recommendations available'))
+        if schemes_text:
+            elements.append(Paragraph("\ud83c\udfdb\ufe0f Government Schemes for You", heading_style))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            # Split into paragraphs and add with better formatting
+            paragraphs = [p.strip() for p in schemes_text.split('\n\n') if p.strip()]
+            for para in paragraphs:
+                if para:
+                    elements.append(Paragraph(para, normal_style))
+                    elements.append(Spacer(1, 0.15*inch))
+            
+            elements.append(Spacer(1, 0.2*inch))
         
         # Competitive Exams Section
-        elements.append(Paragraph("Competitive Exams for You", heading_style))
         exams_text = clean_text(result.get('exam_recommendations', 'No recommendations available'))
-        for para in exams_text.split('\n\n'):
-            if para.strip():
-                elements.append(Paragraph(para.strip(), normal_style))
-                elements.append(Spacer(1, 0.1*inch))
-        
-        elements.append(Spacer(1, 0.3*inch))
+        if exams_text:
+            elements.append(Paragraph("\ud83c\udf93 Competitive Exams for You", heading_style))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            paragraphs = [p.strip() for p in exams_text.split('\n\n') if p.strip()]
+            for para in paragraphs:
+                if para:
+                    elements.append(Paragraph(para, normal_style))
+                    elements.append(Spacer(1, 0.15*inch))
+            
+            elements.append(Spacer(1, 0.2*inch))
         
         # Missed Benefits Section
-        elements.append(Paragraph("Missed Benefits Analysis", heading_style))
         benefits_text = clean_text(result.get('missed_benefits_analysis', 'No analysis available'))
-        for para in benefits_text.split('\n\n'):
-            if para.strip():
-                elements.append(Paragraph(para.strip(), normal_style))
-                elements.append(Spacer(1, 0.1*inch))
+        if benefits_text:
+            elements.append(Paragraph("\ud83d\udcca Missed Benefits Analysis", heading_style))
+            elements.append(Spacer(1, 0.1*inch))
+            
+            paragraphs = [p.strip() for p in benefits_text.split('\n\n') if p.strip()]
+            for para in paragraphs:
+                if para:
+                    elements.append(Paragraph(para, normal_style))
+                    elements.append(Spacer(1, 0.15*inch))
         
         # Errors (if any)
         errors = result.get('errors', [])
@@ -341,22 +402,43 @@ def download_pdf(session_id):
             for error in errors:
                 elements.append(Paragraph(f"• {error}", normal_style))
         
-        # Footer
+        # Footer with disclaimer
         elements.append(Spacer(1, 0.5*inch))
-        elements.append(Paragraph("<i>For more information, visit your local government office or relevant ministry website.</i>", 
-                                 styles['Normal']))
+        
+        # Add separator before footer
+        elements.append(Table([['_'*100]], colWidths=[6.5*inch]))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        footer_style = ParagraphStyle('Footer', parent=styles['Normal'], 
+                                     fontSize=9, textColor=colors.HexColor('#6B7280'),
+                                     alignment=TA_CENTER)
+        elements.append(Paragraph(
+            "<i>This report is generated by JanSahayak AI system. "
+            "For official information and application procedures, "
+            "please visit the respective government ministry websites or contact local government offices.</i>",
+            footer_style
+        ))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph(
+            "<i>Generated by JanSahayak - Your Government Benefits Assistant</i>",
+            footer_style
+        ))
         
         # Build PDF
         doc.build(elements)
         
         # Prepare response
         buffer.seek(0)
-        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Create filename with user's name
+        safe_name = re.sub(r'[^a-zA-Z0-9\s]', '', user_name).replace(' ', '_')
+        timestamp_str = datetime.now().strftime("%Y%m%d")
+        filename = f'JanSahayak_{safe_name}_{timestamp_str}.pdf'
         
         return send_file(
             buffer,
             as_attachment=True,
-            download_name=f'JanSahayak_Report_{timestamp_str}.pdf',
+            download_name=filename,
             mimetype='application/pdf'
         )
         

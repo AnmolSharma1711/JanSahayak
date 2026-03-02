@@ -32,9 +32,6 @@
                                     {% set shown = shown + 1 %}
                                 {% endif %}
                             {% endfor %}
-                            {% if shown == 0 %}
-                                <span style="color: #999; font-style: italic;">Processing profile...</span>
-                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
@@ -63,7 +60,13 @@
                             {% if key not in ['raw_profile', 'user_input', 'error', 'note'] and key not in priority_keys and value != 'Not Provided' %}
                             <div class="profile-item">
                                 <span class="profile-label">{{ key.replace('_', ' ').title() }}</span>
-                                <span class="profile-value">{{ value }}</span>
+                                <span class="profile-value">
+                                    {% if key == 'interests' and value is sequence and value is not string %}
+                                        {{ value | map('title') | join(', ') }}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </span>
                             </div>
                             {% endif %}
                         {% endfor %}
