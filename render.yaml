@@ -5,10 +5,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    buildCommand: |
-      pip install --upgrade pip && 
-      pip install -r requirements.txt && 
-      python init_embeddings.py
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python init_embeddings.py
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION

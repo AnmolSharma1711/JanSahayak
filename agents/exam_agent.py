@@ -24,48 +24,47 @@ def get_llm():
     )
 
 
-def run_exam_agent(profile_data: dict, use_web_search: bool = True) -> dict:
+def run_exam_agent(profile_data: dict, use_web_search: bool = True, vectorstore=None) -> dict:
     """
     Recommends competitive exams based on student profile
     
     Args:
         profile_data: Structured user profile
         use_web_search: Whether to use Tavily for live search
+        vectorstore: Pre-loaded FAISS vectorstore (optional, avoids repeated loading)
         
     Returns:
         Exam recommendations dictionary
     """
     try:
-        # Load vectorstore and retrieve relevant documents
+        # Use provided vectorstore or try to load it
         context = ""
         sources_used = 0
-        try:
-            vectorstore = load_exam_vectorstore()
-            
-            # Create search query from profile
-            search_query = f"""
-            Student Profile:
-            Education: {profile_data.get('education', 'N/A')}
-            Age: {profile_data.get('age', 'N/A')}
-            Interests: {profile_data.get('interests', 'N/A')}
-            Skills: {profile_data.get('skills', 'N/A')}
-            Occupation: {profile_data.get('occupation', 'N/A')}
-            """
-            
-            # RAG retrieval
-            docs = vectorstore.similarity_search(search_query, k=5)
-            context = "\n\n".join([f"Document {i+1}:\n{d.page_content}" for i, d in enumerate(docs)])
-            sources_used = len(docs)
-            print(f"✓ Retrieved {sources_used} exam documents from vectorstore")
-            
-        except FileNotFoundError as e:
-            print(f"⚠️  {str(e)}")
-            print("   Using web search only for exam recommendations")
+        
+        if vectorstore is not None:
+            print("✅ Using pre-loaded vectorstore")
+            try:
+                # Create search query from profile
+                search_query = f"""
+                Student Profile:
+                Education: {profile_data.get('education', 'N/A')}
+                Age: {profile_data.get('age', 'N/A')}
+                Interests: {profile_data.get('interests', 'N/A')}
+                Skills: {profile_data.get('skills', 'N/A')}
+                Occupation: {profile_data.get('occupation', 'N/A')}
+                """
+                
+                # RAG retrieval
+                docs = vectorstore.similarity_search(search_query, k=5)
+                context = "\n\n".join([f"Document {i+1}:\n{d.page_content}" for i, d in enumerate(docs)])
+                sources_used = len(docs)
+                print(f"✓ Retrieved {sources_used} exam documents from vectorstore")
+            except Exception as e:
+                print(f"⚠️  Error querying vectorstore: {str(e)}")
+                context = "Vectorstore query failed. Using live web search."
+        else:
+            print("ℹ️  No vectorstore provided, using web search only")
             context = "No local exam database available. Using live web search."
-        except Exception as e:
-            print(f"⚠️  Vectorstore error: {str(e)}")
-            print("   Falling back to web search only")
-            context = f"Vectorstore error: {str(e)}. Using live web search."
         
         # Create profile string
         profile_str = json.dumps(profile_data, indent=2)

@@ -13,21 +13,17 @@ def download_embeddings():
         print("📦 Downloading HuggingFace Embeddings Model")
         print("="*70)
         
-        from langchain_community.embeddings import HuggingFaceEmbeddings
+        # Import after requirements are installed
+        import sys
+        sys.path.insert(0, '.')
+        from rag.embeddings import get_embeddings
         
-        # Set cache directory
-        cache_dir = os.environ.get('HF_HOME', './hf_cache')
-        os.makedirs(cache_dir, exist_ok=True)
-        
-        print(f"\n📂 Cache directory: {cache_dir}")
+        print(f"\n📂 Cache directory: {os.environ.get('HF_HOME', './hf_cache')}")
         print("🔄 Downloading sentence-transformers/all-MiniLM-L6-v2...")
         print("   (This is ~80MB and will be cached for future use)\n")
         
         # Initialize embeddings - this will download the model
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            cache_folder=cache_dir
-        )
+        embeddings = get_embeddings()
         
         # Test the embeddings
         test_text = "Government welfare scheme for farmers"
@@ -40,6 +36,8 @@ def download_embeddings():
         
     except Exception as e:
         print(f"\n❌ Failed to download embeddings: {str(e)}")
+        import traceback
+        traceback.print_exc()
         print("="*70)
         return False
 
@@ -67,6 +65,8 @@ def build_exam_index_if_needed():
             return False
         
         print(f"\n🔨 Building exam index from {len(pdf_files)} PDF(s)...")
+        import sys
+        sys.path.insert(0, '.')
         from rag.exam_vectorstore import build_exam_vectorstore
         build_exam_vectorstore()
         print("✅ Exam index built successfully")
@@ -74,6 +74,8 @@ def build_exam_index_if_needed():
         
     except Exception as e:
         print(f"⚠️  Could not build exam index: {str(e)}")
+        import traceback
+        traceback.print_exc()
         print("   Exam recommendations will use web search only")
         return False
 

@@ -10,6 +10,9 @@ __pycache__/
 *$py.class
 *.so
 
+# HuggingFace Cache (downloaded models)
+hf_cache/
+
 # RAG Indexes (now included for production)
 # rag/scheme_index/
 # rag/exam_index/

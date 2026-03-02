@@ -24,6 +24,41 @@ app.secret_key = os.urandom(24)  # For session management
 # Store active sessions
 sessions = {}
 
+# Global vectorstores (loaded once at startup)
+SCHEME_VECTORSTORE = None
+EXAM_VECTORSTORE = None
+
+
+def initialize_vectorstores():
+    """Load vectorstores once at startup to avoid repeated loading"""
+    global SCHEME_VECTORSTORE, EXAM_VECTORSTORE
+    
+    print("\n" + "="*70)
+    print("📚 Initializing Vector Stores")
+    print("="*70)
+    
+    # Load scheme vectorstore
+    try:
+        from rag.scheme_vectorstore import load_scheme_vectorstore
+        SCHEME_VECTORSTORE = load_scheme_vectorstore()
+        print("✅ Scheme vectorstore loaded successfully")
+    except Exception as e:
+        print(f"⚠️  Scheme vectorstore not available: {str(e)}")
+        print("   Will use web search only for schemes")
+        SCHEME_VECTORSTORE = None
+    
+    # Load exam vectorstore
+    try:
+        from rag.exam_vectorstore import load_exam_vectorstore
+        EXAM_VECTORSTORE = load_exam_vectorstore()
+        print("✅ Exam vectorstore loaded successfully")
+    except Exception as e:
+        print(f"⚠️  Exam vectorstore not available: {str(e)}")
+        print("   Will use web search only for exams")
+        EXAM_VECTORSTORE = None
+    
+    print("="*70 + "\n")
+
 
 def format_markdown(text):
     """Convert markdown-style text to HTML"""
@@ -150,8 +185,14 @@ def analyze():
                 'interests': structured_data.get('interests', [])
             }
         
-        # Run workflow with interests and structured profile
-        result = run_workflow(user_input, user_interests, structured_profile)
+        # Run workflow with interests, structured profile, and pre-loaded vectorstores
+        result = run_workflow(
+            user_input, 
+            user_interests, 
+            structured_profile,
+            scheme_vectorstore=SCHEME_VECTORSTORE,
+            exam_vectorstore=EXAM_VECTORSTORE
+        )
         
         # Ensure user_profile key exists in result
         if 'user_profile' not in result and 'profile' in result:
@@ -523,6 +564,9 @@ if __name__ == '__main__':
         print("⚠️  WARNING: HF_TOKEN is not set (optional but recommended)")
     else:
         print("✅ HF_TOKEN is configured")
+    
+    # Initialize vectorstores once at startup
+    initialize_vectorstores()
     
     print(f"\n📱 Access the application at: http://localhost:{port}")
     print(f"🌍 Environment: {'Production' if is_production else 'Development'}")

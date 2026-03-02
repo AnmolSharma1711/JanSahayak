@@ -17,6 +17,10 @@ class AgentState(TypedDict):
     user_input: str
     user_interests: list  # ['schemes', 'exams']
     
+    # Pre-loaded vectorstores
+    scheme_vectorstore: object  # FAISS vectorstore or None
+    exam_vectorstore: object  # FAISS vectorstore or None
+    
     # Profiling Agent Output
     profile: dict
     
@@ -97,6 +101,7 @@ def scheme_node(state: AgentState) -> dict:
         
         print("\n🏛️ Running Scheme Recommendation Agent...")
         profile = state.get("profile", {})
+        scheme_vectorstore = state.get("scheme_vectorstore", None)
         
         # Check if profile has useful data (at least 2 fields with actual values)
         useful_fields = [k for k in profile.keys() 
@@ -104,11 +109,11 @@ def scheme_node(state: AgentState) -> dict:
                         and profile[k] not in ['Not Provided', 'N/A', '', None]]
         
         if not profile or len(useful_fields) < 2:
-            print(f"⚠️ Limited profile data ({len(useful_fields)} fields), will rely more on web search")
+            print(f"⚠️  Limited profile data ({len(useful_fields)} fields), will rely more on web search")
         else:
             print(f"✅ Profile has {len(useful_fields)} useful fields")
         
-        result = run_scheme_agent(profile, use_web_search=True)
+        result = run_scheme_agent(profile, use_web_search=True, vectorstore=scheme_vectorstore)
         print("✅ Scheme recommendations generated")
         return {"scheme_recommendations": result.get("recommendations", "")}
         
@@ -136,15 +141,16 @@ def exam_node(state: AgentState) -> dict:
         
         print("\n🎓 Running Exam Recommendation Agent...")
         profile = state.get("profile", {})
+        exam_vectorstore = state.get("exam_vectorstore", None)
         
         # Check if profile has useful data
         useful_fields = [k for k in profile.keys() if k not in ['raw_profile', 'user_input', 'error', 'note']]
         
         if not profile or len(useful_fields) < 2:
-            print("⚠️ Insufficient profile data, using web search only")
+            print("⚠️  Insufficient profile data, using web search only")
             # Still try with whatever we have
         
-        result = run_exam_agent(profile, use_web_search=True)
+        result = run_exam_agent(profile, use_web_search=True, vectorstore=exam_vectorstore)
         print("✅ Exam recommendations generated")
         return {"exam_recommendations": result.get("recommendations", "")}
         
@@ -243,7 +249,8 @@ def build_workflow():
     return workflow.compile()
 
 
-def run_workflow(user_input: str, user_interests: list = None, structured_profile: dict = None) -> dict:
+def run_workflow(user_input: str, user_interests: list = None, structured_profile: dict = None, 
+                 scheme_vectorstore=None, exam_vectorstore=None) -> dict:
     """
     Runs the complete multi-agent workflow
     
@@ -251,6 +258,8 @@ def run_workflow(user_input: str, user_interests: list = None, structured_profil
         user_input: Raw user input text
         user_interests: List of interests ['schemes', 'exams']
         structured_profile: Pre-extracted profile data from form (optional)
+        scheme_vectorstore: Pre-loaded scheme vectorstore (optional)
+        exam_vectorstore: Pre-loaded exam vectorstore (optional)
         
     Returns:
         Final compiled output dictionary
@@ -265,6 +274,11 @@ def run_workflow(user_input: str, user_interests: list = None, structured_profil
     if structured_profile:
         print("📋 Using structured profile data from form")
     
+    if scheme_vectorstore:
+        print("📚 Using pre-loaded scheme vectorstore")
+    if exam_vectorstore:
+        print("📚 Using pre-loaded exam vectorstore")
+    
     # Build workflow
     app = build_workflow()
     
@@ -273,6 +287,8 @@ def run_workflow(user_input: str, user_interests: list = None, structured_profil
         "user_input": user_input,
         "user_interests": user_interests or ["schemes", "exams"],
         "profile": structured_profile if structured_profile else {},
+        "scheme_vectorstore": scheme_vectorstore,
+        "exam_vectorstore": exam_vectorstore,
         "errors": []
     }
     
