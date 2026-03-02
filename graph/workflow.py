@@ -44,15 +44,29 @@ def profiling_node(state: AgentState) -> dict:
     from agents.profiling_agent import run_profiling_agent
     
     try:
+        # Check if we already have a structured profile (from form)
+        existing_profile = state.get("profile", {})
+        
+        # If we have useful profile data already, skip LLM profiling
+        useful_fields = [k for k in existing_profile.keys() if k not in ['raw_profile', 'user_input', 'error', 'note'] and existing_profile[k] not in ['Not Provided', 'N/A', '', None]]
+        
+        if len(useful_fields) >= 3:
+            print("\n✅ Using pre-extracted profile data (skipping LLM profiling)")
+            return {"profile": existing_profile}
+        
         print("\n🔍 Running Profiling Agent...")
         user_input = state.get("user_input", "")
         profile = run_profiling_agent(user_input)
         
-        if "error" in profile and len(profile) == 1:
-            print("❌ Profile extraction completely failed")
+        # Merge with existing profile if available
+        if existing_profile:
+            profile = {**profile, **existing_profile}  # existing_profile takes precedence
+        
+        if "error" in profile and len(profile) <= 2:  # Only error and maybe user_input
+            print("❌ Profile extraction failed, using fallback data")
             return {
-                "profile": {},
-                "errors": ["Profiling failed: " + profile["error"]]
+                "profile": existing_profile if existing_profile else {},
+                "errors": ["Profiling failed: " + profile.get("error", "Unknown error")]
             }
         
         print("✅ Profile extracted successfully")
@@ -60,8 +74,9 @@ def profiling_node(state: AgentState) -> dict:
         
     except Exception as e:
         print(f"❌ Profiling Agent Error: {str(e)}")
+        existing_profile = state.get("profile", {})
         return {
-            "profile": {},
+            "profile": existing_profile if existing_profile else {},
             "errors": [f"Profiling: {str(e)}"]
         }
 
@@ -83,12 +98,15 @@ def scheme_node(state: AgentState) -> dict:
         print("\n🏛️ Running Scheme Recommendation Agent...")
         profile = state.get("profile", {})
         
-        # Check if profile has useful data (at least 2 fields besides raw_profile/user_input/error/note)
-        useful_fields = [k for k in profile.keys() if k not in ['raw_profile', 'user_input', 'error', 'note']]
+        # Check if profile has useful data (at least 2 fields with actual values)
+        useful_fields = [k for k in profile.keys() 
+                        if k not in ['raw_profile', 'user_input', 'error', 'note'] 
+                        and profile[k] not in ['Not Provided', 'N/A', '', None]]
         
         if not profile or len(useful_fields) < 2:
-            print("⚠️ Insufficient profile data, using web search only")
-            # Still try with whatever we have
+            print(f"⚠️ Limited profile data ({len(useful_fields)} fields), will rely more on web search")
+        else:
+            print(f"✅ Profile has {len(useful_fields)} useful fields")
         
         result = run_scheme_agent(profile, use_web_search=True)
         print("✅ Scheme recommendations generated")
@@ -225,13 +243,14 @@ def build_workflow():
     return workflow.compile()
 
 
-def run_workflow(user_input: str, user_interests: list = None) -> dict:
+def run_workflow(user_input: str, user_interests: list = None, structured_profile: dict = None) -> dict:
     """
     Runs the complete multi-agent workflow
     
     Args:
         user_input: Raw user input text
         user_interests: List of interests ['schemes', 'exams']
+        structured_profile: Pre-extracted profile data from form (optional)
         
     Returns:
         Final compiled output dictionary
@@ -243,6 +262,9 @@ def run_workflow(user_input: str, user_interests: list = None) -> dict:
     if user_interests:
         print(f"🎯 User Interests: {', '.join(user_interests)}")
     
+    if structured_profile:
+        print("📋 Using structured profile data from form")
+    
     # Build workflow
     app = build_workflow()
     
@@ -250,6 +272,7 @@ def run_workflow(user_input: str, user_interests: list = None) -> dict:
     initial_state = {
         "user_input": user_input,
         "user_interests": user_interests or ["schemes", "exams"],
+        "profile": structured_profile if structured_profile else {},
         "errors": []
     }
     

@@ -28,7 +28,7 @@ def extract_json_from_text(text: str) -> dict:
     
     # Try direct JSON parse first
     try:
-        return json.loads(text)
+        return json.loads(text.strip())
     except json.JSONDecodeError:
         pass
     
@@ -41,7 +41,19 @@ def extract_json_from_text(text: str) -> dict:
         except json.JSONDecodeError:
             pass
     
-    # Try to find JSON object in text
+    # Try to find complete JSON object (improved pattern)
+    # Match from first { to last }
+    start_idx = text.find('{')
+    end_idx = text.rfind('}')
+    
+    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+        try:
+            potential_json = text[start_idx:end_idx+1]
+            return json.loads(potential_json)
+        except json.JSONDecodeError:
+            pass
+    
+    # Fallback: try to find any JSON-like structure
     json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
     matches = re.findall(json_pattern, text, re.DOTALL)
     for match in matches:

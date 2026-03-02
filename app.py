@@ -102,13 +102,10 @@ def analyze():
         # Extract user interests from structured data
         user_interests = structured_data.get('interests', ['schemes', 'exams']) if structured_data else ['schemes', 'exams']
         
-        # Run workflow with interests
-        result = run_workflow(user_input, user_interests)
-        
-        # If we have structured data, always use it for profile (it's more reliable)
+        # Prepare structured profile if available
+        structured_profile = None
         if structured_data:
-            # Override profile with structured data
-            result['user_profile'] = {
+            structured_profile = {
                 'name': structured_data.get('name', 'Not Provided'),
                 'age': structured_data.get('age', 'Not Provided'),
                 'gender': structured_data.get('gender', 'Not Provided'),
@@ -121,12 +118,13 @@ def analyze():
                 'career_interest': structured_data.get('career_interest', 'Not Provided'),
                 'interests': structured_data.get('interests', [])
             }
-        elif result.get('user_profile'):
-            # Keep the AI-extracted profile
-            pass
-        else:
-            # No profile available
-            result['user_profile'] = {}
+        
+        # Run workflow with interests and structured profile
+        result = run_workflow(user_input, user_interests, structured_profile)
+        
+        # Ensure user_profile key exists in result
+        if 'user_profile' not in result and 'profile' in result:
+            result['user_profile'] = result['profile']
         
         # Update session
         sessions[session_id]['status'] = 'completed'
