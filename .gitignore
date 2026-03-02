@@ -10,9 +10,9 @@ __pycache__/
 *$py.class
 *.so
 
-# RAG Indexes
-rag/scheme_index/
-rag/exam_index/
+# RAG Indexes (now included for production)
+# rag/scheme_index/
+# rag/exam_index/
 
 # Outputs
 outputs/*.json
