@@ -50,12 +50,19 @@ def load_exam_vectorstore():
     """
     Loads pre-built exam vectorstore
     Returns FAISS vectorstore instance
-    """
-    embeddings = get_embeddings()
     
-    if not os.path.exists("rag/exam_index"):
+    Raises:
+        FileNotFoundError: If vectorstore files don't exist
+        RuntimeError: If embeddings fail to load
+    """
+    if not os.path.exists("rag/exam_index/index.faiss"):
         raise FileNotFoundError(
-            "Exam vectorstore not found. Run build_exam_vectorstore() first."
+            "Exam vectorstore not found at rag/exam_index/index.faiss. "
+            "Run 'python init_embeddings.py' or build_exam_vectorstore() first."
         )
     
-    return FAISS.load_local("rag/exam_index", embeddings, allow_dangerous_deserialization=True)
+    print("📂 Loading exam vectorstore...")
+    embeddings = get_embeddings()
+    vectorstore = FAISS.load_local("rag/exam_index", embeddings, allow_dangerous_deserialization=True)
+    print("✅ Exam vectorstore loaded successfully")
+    return vectorstore

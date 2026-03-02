@@ -36,14 +36,13 @@ def run_scheme_agent(profile_data: dict, use_web_search: bool = True) -> dict:
         Scheme recommendations dictionary
     """
     try:
-        # Load vectorstore (optional)
+        # Load vectorstore and retrieve relevant documents
         context = ""
         sources_used = 0
         try:
             vectorstore = load_scheme_vectorstore()
             
             # Create search query from profile
-            profile_str = json.dumps(profile_data, indent=2)
             search_query = f"""
             User Profile:
             Income: {profile_data.get('income', 'N/A')}
@@ -59,12 +58,15 @@ def run_scheme_agent(profile_data: dict, use_web_search: bool = True) -> dict:
             context = "\n\n".join([f"Document {i+1}:\n{d.page_content}" for i, d in enumerate(docs)])
             sources_used = len(docs)
             print(f"✓ Retrieved {sources_used} scheme documents from vectorstore")
-        except FileNotFoundError:
-            print("⚠ Scheme vectorstore not found, using web search only")
+            
+        except FileNotFoundError as e:
+            print(f"⚠️  {str(e)}")
+            print("   Using web search only for scheme recommendations")
             context = "No local scheme database available. Using live web search."
         except Exception as e:
-            print(f"⚠ Vectorstore error: {str(e)}, falling back to web search")
-            context = "Vectorstore unavailable. Using live web search."
+            print(f"⚠️  Vectorstore error: {str(e)}")
+            print("   Falling back to web search only")
+            context = f"Vectorstore error: {str(e)}. Using live web search."
         
         # Create profile string
         profile_str = json.dumps(profile_data, indent=2)

@@ -50,12 +50,19 @@ def load_scheme_vectorstore():
     """
     Loads pre-built scheme vectorstore
     Returns FAISS vectorstore instance
-    """
-    embeddings = get_embeddings()
     
-    if not os.path.exists("rag/scheme_index"):
+    Raises:
+        FileNotFoundError: If vectorstore files don't exist
+        RuntimeError: If embeddings fail to load
+    """
+    if not os.path.exists("rag/scheme_index/index.faiss"):
         raise FileNotFoundError(
-            "Scheme vectorstore not found. Run build_scheme_vectorstore() first."
+            "Scheme vectorstore not found at rag/scheme_index/index.faiss. "
+            "Run 'python init_embeddings.py' or build_scheme_vectorstore() first."
         )
     
-    return FAISS.load_local("rag/scheme_index", embeddings, allow_dangerous_deserialization=True)
+    print("📂 Loading scheme vectorstore...")
+    embeddings = get_embeddings()
+    vectorstore = FAISS.load_local("rag/scheme_index", embeddings, allow_dangerous_deserialization=True)
+    print("✅ Scheme vectorstore loaded successfully")
+    return vectorstore

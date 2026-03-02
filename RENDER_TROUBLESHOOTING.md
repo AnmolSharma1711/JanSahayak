@@ -20,9 +20,76 @@ The application requires these environment variables to be set on Render:
    GROQ_API_KEY=your_groq_api_key_here
    TAVILY_API_KEY=your_tavily_api_key_here
    HF_TOKEN=your_huggingface_token_here (optional)
+   HF_HOME=/opt/render/.cache/huggingface
    ```
 5. Click **Save Changes**
 6. Render will automatically redeploy
+
+---
+
+## Vector Store & Embeddings Setup (RAG Functionality)
+
+### What Happens During Deployment
+
+The `render.yaml` buildCommand includes `python init_embeddings.py` which:
+
+1. **Downloads HuggingFace Embeddings** (~80MB)
+   - Model: `sentence-transformers/all-MiniLM-L6-v2`
+   - Cached in `HF_HOME` directory for reuse
+   
+2. **Verifies Vector Stores**
+   - Checks `rag/scheme_index/index.faiss` exists (✅ included in git)
+   - Builds `rag/exam_index/` if exam PDFs are present
+
+3. **Tests Embeddings**
+   - Runs a test query to ensure everything works
+
+### If Build Fails
+
+Check Render build logs for:
+
+```
+❌ Failed to download embeddings: [error message]
+```
+
+**Common causes:**
+- Build timeout (free tier has limits)
+- Network issues downloading model
+- Insufficient memory
+
+**Solutions:**
+1. **Increase timeout** - Render free tier may timeout on large downloads
+2. **Check logs** - Look for specific error messages
+3. **Retry deployment** - Sometimes temporary network issues
+
+### Vector Store Files
+
+These files MUST be in your git repository:
+
+```
+rag/
+├── scheme_index/
+│   ├── index.faiss  ← Binary vector index
+│   └── index.pkl    ← Metadata pickle file
+└── exam_index/      ← Optional (auto-built if PDFs present)
+    ├── index.faiss
+    └── index.pkl
+```
+
+**Check if files are tracked:**
+```bash
+git ls-files | grep "index\\.faiss"
+```
+
+### How RAG + Search Works
+
+1. **Primary**: Vector store retrieval (fast, offline)
+2. **Enhancement**: Tavily web search (live, current data)
+3. **Fallback**: If vectorstore fails, uses web search only
+
+---
+
+## Request Timeout Issues
 
 ### 2. **Request Timeout**
 Render's free tier has a 30-second timeout. The AI analysis might take longer.
@@ -30,6 +97,9 @@ Render's free tier has a 30-second timeout. The AI analysis might take longer.
 #### How to Check:
 - Visit `https://jansahayak-mthf.onrender.com/health` to check if API keys are configured
 - Check Render logs for timeout errors
+
+#### Solutions:
+- Embeddings are pre-downloaded during build (not runtime)
 
 ### 3. **Memory Issues**
 The free tier has limited memory. Vector stores and embeddings can be memory-intensive.
