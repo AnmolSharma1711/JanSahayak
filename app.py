@@ -99,25 +99,34 @@ def analyze():
             'started_at': datetime.now().isoformat()
         }
         
-        # Run workflow
-        result = run_workflow(user_input)
+        # Extract user interests from structured data
+        user_interests = structured_data.get('interests', ['schemes', 'exams']) if structured_data else ['schemes', 'exams']
         
-        # If we have structured data and profiling failed, inject it
-        if structured_data and result.get('profile', {}).get('name') == 'N/A':
+        # Run workflow with interests
+        result = run_workflow(user_input, user_interests)
+        
+        # If we have structured data, always use it for profile (it's more reliable)
+        if structured_data:
             # Override profile with structured data
-            result['profile'] = {
-                'name': structured_data.get('name', 'N/A'),
-                'age': int(structured_data.get('age', 0)) if structured_data.get('age') else 'N/A',
-                'gender': structured_data.get('gender', 'N/A'),
-                'state': structured_data.get('state', 'N/A'),
-                'education': structured_data.get('education', 'N/A'),
-                'employment_status': structured_data.get('employment', 'N/A'),
-                'income': structured_data.get('income', 'N/A'),
-                'category': structured_data.get('category', 'N/A'),
-                'specialization': structured_data.get('specialization', 'N/A'),
-                'career_interest': structured_data.get('career_interest', 'N/A'),
+            result['user_profile'] = {
+                'name': structured_data.get('name', 'Not Provided'),
+                'age': structured_data.get('age', 'Not Provided'),
+                'gender': structured_data.get('gender', 'Not Provided'),
+                'state': structured_data.get('state', 'Not Provided'),
+                'education': structured_data.get('education', 'Not Provided'),
+                'employment_status': structured_data.get('employment', 'Not Provided'),
+                'income': structured_data.get('income', 'Not Provided'),
+                'caste': structured_data.get('category', 'Not Provided'),
+                'specialization': structured_data.get('specialization', 'Not Provided'),
+                'career_interest': structured_data.get('career_interest', 'Not Provided'),
                 'interests': structured_data.get('interests', [])
             }
+        elif result.get('user_profile'):
+            # Keep the AI-extracted profile
+            pass
+        else:
+            # No profile available
+            result['user_profile'] = {}
         
         # Update session
         sessions[session_id]['status'] = 'completed'

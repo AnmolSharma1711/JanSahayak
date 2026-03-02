@@ -15,6 +15,7 @@ class AgentState(TypedDict):
     """
     # Input
     user_input: str
+    user_interests: list  # ['schemes', 'exams']
     
     # Profiling Agent Output
     profile: dict
@@ -73,6 +74,12 @@ def scheme_node(state: AgentState) -> dict:
     from agents.scheme_agent import run_scheme_agent
     
     try:
+        # Check if user wants scheme recommendations
+        interests = state.get("user_interests", ["schemes", "exams"])
+        if "schemes" not in interests:
+            print("\n⏭️ Skipping Scheme Agent (not requested)")
+            return {"scheme_recommendations": "Not requested by user"}
+        
         print("\n🏛️ Running Scheme Recommendation Agent...")
         profile = state.get("profile", {})
         
@@ -103,6 +110,12 @@ def exam_node(state: AgentState) -> dict:
     from agents.exam_agent import run_exam_agent
     
     try:
+        # Check if user wants exam recommendations
+        interests = state.get("user_interests", ["schemes", "exams"])
+        if "exams" not in interests:
+            print("\n⏭️ Skipping Exam Agent (not requested)")
+            return {"exam_recommendations": "Not requested by user"}
+        
         print("\n🎓 Running Exam Recommendation Agent...")
         profile = state.get("profile", {})
         
@@ -212,12 +225,13 @@ def build_workflow():
     return workflow.compile()
 
 
-def run_workflow(user_input: str) -> dict:
+def run_workflow(user_input: str, user_interests: list = None) -> dict:
     """
     Runs the complete multi-agent workflow
     
     Args:
         user_input: Raw user input text
+        user_interests: List of interests ['schemes', 'exams']
         
     Returns:
         Final compiled output dictionary
@@ -226,12 +240,16 @@ def run_workflow(user_input: str) -> dict:
     print("🚀 Starting JanSahayak Multi-Agent System")
     print("="*60)
     
+    if user_interests:
+        print(f"🎯 User Interests: {', '.join(user_interests)}")
+    
     # Build workflow
     app = build_workflow()
     
     # Initialize state
     initial_state = {
         "user_input": user_input,
+        "user_interests": user_interests or ["schemes", "exams"],
         "errors": []
     }
     

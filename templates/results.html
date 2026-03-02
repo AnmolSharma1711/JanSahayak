@@ -79,6 +79,7 @@
         </div>
 
         <!-- Government Schemes -->
+        {% if result.scheme_recommendations and result.scheme_recommendations != 'Not requested by user' %}
         <div class="result-card">
             <div class="card-header">
                 <h3><i class="fas fa-landmark"></i> Government Schemes for You</h3>
@@ -96,8 +97,10 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Competitive Exams -->
+        {% if result.exam_recommendations and result.exam_recommendations != 'Not requested by user' %}
         <div class="result-card">
             <div class="card-header">
                 <h3><i class="fas fa-graduation-cap"></i> Competitive Exams for You</h3>
@@ -115,6 +118,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Missed Benefits Analysis -->
         <div class="result-card highlight">
