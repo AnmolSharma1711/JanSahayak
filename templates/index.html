@@ -547,19 +547,54 @@ document.getElementById('analysisForm').addEventListener('submit', async functio
             })
         });
         
+        // Check if response is OK
+        if (!response.ok) {
+            // Try to get error message
+            const contentType = response.headers.get('content-type');
+            let errorMessage = `Server error (${response.status})`;
+            
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } else {
+                // Server returned HTML or other non-JSON response
+                const textResponse = await response.text();
+                if (textResponse.includes('timeout') || textResponse.includes('Timeout')) {
+                    errorMessage = 'Request timed out. The analysis is taking longer than expected. Please try again.';
+                } else if (response.status === 502 || response.status === 504) {
+                    errorMessage = 'Server is temporarily unavailable. Please ensure API keys are configured and try again.';
+                } else {
+                    errorMessage = `Server error (${response.status}). Please check server configuration and API keys.`;
+                }
+            }
+            
+            alert('Error: ' + errorMessage);
+            document.getElementById('analysisForm').style.display = 'block';
+            document.getElementById('loadingState').style.display = 'none';
+            showStep(1);
+            return;
+        }
+        
+        // Check content type before parsing JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned non-JSON response. Please check server logs and ensure API keys are configured.');
+        }
+        
         const data = await response.json();
         
         if (data.success) {
             // Redirect to results page
             window.location.href = '/result/' + data.session_id;
         } else {
-            alert('Error: ' + data.error);
+            alert('Error: ' + (data.error || 'Unknown error occurred'));
             document.getElementById('analysisForm').style.display = 'block';
             document.getElementById('loadingState').style.display = 'none';
             showStep(1); // Go back to first step
         }
     } catch (error) {
-        alert('Error: ' + error.message);
+        console.error('Full error:', error);
+        alert('Error: ' + error.message + '\n\nPlease ensure:\n1. API keys are configured on Render\n2. Server is running properly\n3. Check server logs for details');
         document.getElementById('analysisForm').style.display = 'block';
         document.getElementById('loadingState').style.display = 'none';
         showStep(1); // Go back to first step

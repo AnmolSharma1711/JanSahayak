@@ -74,10 +74,41 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/health')
+def health():
+    """Health check endpoint for monitoring"""
+    from config import GROQ_API_KEY, TAVILY_API_KEY, HF_TOKEN
+    
+    return jsonify({
+        'status': 'ok',
+        'service': 'JanSahayak',
+        'api_keys_configured': {
+            'groq': bool(GROQ_API_KEY),
+            'tavily': bool(TAVILY_API_KEY),
+            'hf_token': bool(HF_TOKEN)
+        }
+    })
+
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     """Process user input and run workflow"""
     try:
+        # First check if API keys are configured
+        from config import GROQ_API_KEY, TAVILY_API_KEY
+        
+        if not GROQ_API_KEY or GROQ_API_KEY == "":
+            return jsonify({
+                'success': False,
+                'error': 'GROQ_API_KEY is not configured. Please set environment variables on Render.'
+            }), 500
+        
+        if not TAVILY_API_KEY or TAVILY_API_KEY == "":
+            return jsonify({
+                'success': False,
+                'error': 'TAVILY_API_KEY is not configured. Please set environment variables on Render.'
+            }), 500
+        
         # Get user input
         user_input = request.json.get('user_input', '')
         structured_data = request.json.get('structured_data', None)
@@ -146,10 +177,25 @@ def analyze():
             'filename': filename
         })
         
-    except Exception as e:
+    except ImportError as e:
+        print(f"Import Error in /analyze: {str(e)}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'Configuration error: {str(e)}. Please ensure all dependencies are installed.'
+        }), 500
+    except TimeoutError as e:
+        print(f"Timeout Error in /analyze: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Request timed out. The analysis is taking longer than expected. Please try again.'
+        }), 504
+    except Exception as e:
+        print(f"Error in /analyze: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f'An error occurred during analysis: {str(e)}'
         }), 500
 
 
@@ -457,6 +503,27 @@ if __name__ == '__main__':
     print("\n" + "="*70)
     print("🙏 JANSAHAYAK - Starting Web Server")
     print("="*70)
+    
+    # Check API keys on startup
+    from config import GROQ_API_KEY, TAVILY_API_KEY, HF_TOKEN
+    
+    if not GROQ_API_KEY or GROQ_API_KEY == "":
+        print("⚠️  WARNING: GROQ_API_KEY is not set!")
+        print("   The application will not work without this API key.")
+    else:
+        print("✅ GROQ_API_KEY is configured")
+    
+    if not TAVILY_API_KEY or TAVILY_API_KEY == "":
+        print("⚠️  WARNING: TAVILY_API_KEY is not set!")
+        print("   The application will not work without this API key.")
+    else:
+        print("✅ TAVILY_API_KEY is configured")
+    
+    if not HF_TOKEN or HF_TOKEN == "":
+        print("⚠️  WARNING: HF_TOKEN is not set (optional but recommended)")
+    else:
+        print("✅ HF_TOKEN is configured")
+    
     print(f"\n📱 Access the application at: http://localhost:{port}")
     print(f"🌍 Environment: {'Production' if is_production else 'Development'}")
     print("🛑 Press CTRL+C to stop the server\n")
