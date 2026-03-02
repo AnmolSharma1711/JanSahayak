@@ -1,0 +1,31 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation
+*.md
+ARCHITECTURE.txt
+PROJECT_STRUCTURE.txt
+
+# Outputs (will be generated)
+outputs/*.json
+
+# RAG indexes (build during deployment)
+rag/scheme_index/
+rag/exam_index/

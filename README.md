@@ -99,6 +99,68 @@ python main.py
 - **Tavily API**: https://tavily.com/
 - **HuggingFace Token**: https://huggingface.co/settings/tokens
 
+## 🌐 Deployment
+
+Deploy JanSahayak to the cloud using one of these platforms:
+
+### Render (Recommended - Easiest)
+
+1. Fork/push repository to GitHub
+2. Create account at [render.com](https://render.com)
+3. Click "New +" → "Blueprint"
+4. Connect your repository
+5. Render auto-detects `render.yaml` configuration
+6. Add environment variables in dashboard:
+   - `GROQ_API_KEY`
+   - `TAVILY_API_KEY`
+   - `HF_TOKEN`
+7. Click "Apply" - your app will be live in minutes!
+
+**Cost**: Free tier available (512MB RAM, spins down after inactivity)
+
+### Heroku
+
+1. Install [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+2. Login and create app:
+```bash
+heroku login
+heroku create your-app-name
+```
+3. Set environment variables:
+```bash
+heroku config:set GROQ_API_KEY=your_key
+heroku config:set TAVILY_API_KEY=your_key
+heroku config:set HF_TOKEN=your_token
+```
+4. Deploy:
+```bash
+git push heroku main
+```
+
+**Cost**: Eco dynos ($5/month), includes free hours
+
+### Docker
+
+Build and run locally or on any container platform:
+
+```bash
+docker-compose up --build
+# OR
+docker build -t jansahayak .
+docker run -p 5000:5000 --env-file .env jansahayak
+```
+
+**Platforms**: AWS ECS, Google Cloud Run, Azure Container Instances, DigitalOcean App Platform
+
+### Vercel (Limited Support)
+
+⚠️ **Note**: Vercel has significant limitations for ML applications:
+- 50MB size limit (this app is ~200MB with dependencies)
+- 10-second timeout (agent workflows can take 20-30s)
+- Not recommended for production
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide with troubleshooting, security best practices, and platform comparisons.
+
 ## 📁 Project Structure
 
 See code comments for detailed module documentation.

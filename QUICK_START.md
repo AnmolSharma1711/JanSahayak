@@ -182,6 +182,32 @@ app.run(debug=True, port=8080)
 - 📚 Usage Guide: `USAGE_GUIDE.md`
 - 🏗️ Architecture: `ARCHITECTURE.txt`
 - 🎨 UI Preview: `UI_PREVIEW.md`
+- 🚀 **Deployment Guide:** `DEPLOYMENT.md`
+
+## ☁️ Deploy to Cloud
+
+Want to deploy JanSahayak online? We support multiple platforms:
+
+### Render (Easiest)
+1. Push code to GitHub
+2. Create free account at render.com
+3. Create "Blueprint" from your repo
+4. Add API keys in dashboard
+5. Deploy! ✅
+
+### Heroku
+```bash
+heroku create your-app-name
+heroku config:set GROQ_API_KEY=your_key
+git push heroku main
+```
+
+### Docker
+```bash
+docker-compose up --build
+```
+
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for complete step-by-step guides!**
 
 ## Support
 

@@ -340,10 +340,17 @@ def download_pdf(session_id):
 
 
 if __name__ == '__main__':
+    # Get port from environment variable (for deployment platforms)
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Check if running in production
+    is_production = os.environ.get('FLASK_ENV') != 'development'
+    
     print("\n" + "="*70)
     print("🙏 JANSAHAYAK - Starting Web Server")
     print("="*70)
-    print("\n📱 Access the application at: http://localhost:5000")
+    print(f"\n📱 Access the application at: http://localhost:{port}")
+    print(f"🌍 Environment: {'Production' if is_production else 'Development'}")
     print("🛑 Press CTRL+C to stop the server\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=not is_production, host='0.0.0.0', port=port)
