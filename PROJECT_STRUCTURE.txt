@@ -1,0 +1,387 @@
+JanSahayak - Multi-Agent Government Intelligence System
+========================================================
+
+📦 JanSahayak/
+│
+├── 📄 main.py                          # Main entry point
+├── 📄 setup.py                         # Setup wizard & utilities
+├── 📄 config.py                        # Configuration loader
+├── 📄 requirements.txt                 # Python dependencies
+│
+├── 📄 README.md                        # Project overview
+├── 📄 USAGE_GUIDE.md                   # Comprehensive usage guide
+├── 📄 ARCHITECTURE.txt                 # System architecture
+│
+├── 📄 .env.example                     # Example environment file
+├── 📄 .gitignore                       # Git ignore rules
+│
+├── 📁 agents/                          # Agent modules
+│   ├── __init__.py
+│   ├── profiling_agent.py              # 🧾 User profiling
+│   ├── scheme_agent.py                 # 🏛️ Scheme recommendations
+│   ├── exam_agent.py                   # 🎓 Exam recommendations
+│   ├── search_agent.py                 # 🔎 Web search (Tavily)
+│   ├── rag_agent.py                    # 📚 RAG retrieval
+│   ├── document_agent.py               # 📂 Document processing
+│   └── benefit_agent.py                # 💰 Benefit calculator
+│
+├── 📁 prompts/                         # Prompt templates
+│   ├── __init__.py
+│   ├── profiling_prompt.py             # Profiling instructions
+│   ├── scheme_prompt.py                # Scheme recommendation template
+│   ├── exam_prompt.py                  # Exam recommendation template
+│   └── rag_prompt.py                   # RAG retrieval template
+│
+├── 📁 rag/                             # RAG system
+│   ├── __init__.py
+│   ├── embeddings.py                   # HuggingFace embeddings
+│   ├── scheme_vectorstore.py           # Scheme FAISS store
+│   ├── exam_vectorstore.py             # Exam FAISS store
+│   ├── scheme_index/                   # Generated vectorstore
+│   │   ├── index.faiss
+│   │   └── index.pkl
+│   └── exam_index/                     # Generated vectorstore
+│       ├── index.faiss
+│       └── index.pkl
+│
+├── 📁 tools/                           # External tools
+│   ├── __init__.py
+│   └── tavily_tool.py                  # Tavily search integration
+│
+├── 📁 graph/                           # Workflow orchestration
+│   ├── __init__.py
+│   └── workflow.py                     # LangGraph workflow
+│
+├── 📁 agent_io/                        # Agent I/O handlers
+│   ├── __init__.py
+│   ├── profiling_io.py                 # Profiling I/O
+│   ├── scheme_io.py                    # Scheme I/O
+│   ├── exam_io.py                      # Exam I/O
+│   └── benefit_io.py                   # Benefit I/O
+│
+├── 📁 data/                            # PDF data
+│   ├── schemes_pdfs/                   # Government scheme PDFs
+│   │   └── README.txt
+│   └── exams_pdfs/                     # Competitive exam PDFs
+│       └── README.txt
+│
+└── 📁 outputs/                         # Generated results
+    ├── README.txt
+    └── results_*.json                  # Analysis results
+
+
+KEY FILES DESCRIPTION
+=====================
+
+📄 main.py
+----------
+Main application entry point with:
+- Interactive mode for user input
+- File mode for batch processing
+- Result saving and formatting
+- Summary display
+
+📄 setup.py
+-----------
+Setup wizard that:
+- Checks dependencies
+- Verifies API keys
+- Validates PDF data
+- Builds vectorstores
+
+📄 config.py
+------------
+Loads configuration from .env:
+- GROQ_API_KEY
+- TAVILY_API_KEY
+- HF_TOKEN
+
+📁 agents/
+----------
+7 specialized agents:
+1. profiling_agent.py   → Extract user profile
+2. scheme_agent.py      → Recommend schemes
+3. exam_agent.py        → Recommend exams
+4. search_agent.py      → Live web search
+5. rag_agent.py         → Vector search
+6. document_agent.py    → Process PDFs/images
+7. benefit_agent.py     → Calculate missed benefits
+
+📁 prompts/
+-----------
+Prompt engineering templates for:
+- User profiling instructions
+- Scheme recommendation format
+- Exam recommendation format
+- RAG retrieval guidance
+
+📁 rag/
+-------
+RAG (Retrieval Augmented Generation) system:
+- embeddings.py          → HuggingFace embeddings
+- scheme_vectorstore.py  → Scheme database
+- exam_vectorstore.py    → Exam database
+- *_index/              → Generated FAISS indexes
+
+📁 tools/
+---------
+External tool integrations:
+- tavily_tool.py → Tavily API for government website search
+
+📁 graph/
+---------
+LangGraph workflow orchestration:
+- workflow.py → Defines agent connections and execution flow
+
+📁 agent_io/
+------------
+Input/Output handlers for each agent:
+- Separate I/O files for tracking
+- JSON-based data exchange
+- Timestamp tracking
+
+📁 data/
+--------
+Training data for RAG:
+- schemes_pdfs/ → Government scheme documents
+- exams_pdfs/   → Competitive exam documents
+
+📁 outputs/
+-----------
+Generated analysis results:
+- results_YYYYMMDD_HHMMSS.json
+- Contains all agent outputs
+
+
+WORKFLOW VISUALIZATION
+======================
+
+                User Input (Text)
+                        ↓
+                ┌───────────────┐
+                │   Profiling   │
+                │     Agent     │
+                └───────┬───────┘
+                        │
+                 Structured Profile
+                        │
+        ┌───────────────┼───────────────┐
+        ↓                               ↓
+┌───────────────┐               ┌───────────────┐
+│    Scheme     │               │     Exam      │
+│     Agent     │               │     Agent     │
+└───────┬───────┘               └───────┬───────┘
+        │                               │
+        ├─→ RAG Search                  ├─→ RAG Search
+        ├─→ Web Search                  └─→ Web Search
+        ↓                               │
+┌───────────────┐                       │
+│    Benefit    │                       │
+│     Agent     │                       │
+└───────┬───────┘                       │
+        │                               │
+        └───────────────┬───────────────┘
+                        ↓
+                ┌───────────────┐
+                │     Final     │
+                │    Output     │
+                └───────────────┘
+                        ↓
+                   JSON File
+
+
+TECHNOLOGY COMPONENTS
+=====================
+
+🧠 Brain (LLM)
+- Groq API (llama-3.3-70b-versatile)
+- Fast inference (<2s per call)
+- Powers all agents
+
+📚 Memory (RAG)
+- HuggingFace embeddings (all-MiniLM-L6-v2)
+- FAISS vectorstore (CPU)
+- Semantic search
+
+🔍 Live Search
+- Tavily API
+- Government website focus
+- Real-time information
+
+🔗 Orchestration
+- LangChain (agent framework)
+- LangGraph (workflow)
+- State management
+
+📄 Document Processing
+- PyPDF (PDF extraction)
+- Pytesseract (OCR)
+- Pillow (image handling)
+
+
+QUICK START CHECKLIST
+======================
+
+□ 1. Install dependencies
+     pip install -r requirements.txt
+
+□ 2. Create .env file
+     Copy .env.example to .env
+     Add GROQ_API_KEY and TAVILY_API_KEY
+
+□ 3. Add PDF data
+     Place PDFs in data/schemes_pdfs/
+     Place PDFs in data/exams_pdfs/
+
+□ 4. Run setup
+     python setup.py
+
+□ 5. Build vectorstores
+     Automatic during setup, or:
+     python setup.py --build-vectorstores
+
+□ 6. Run the system
+     python main.py
+
+
+USAGE EXAMPLES
+==============
+
+Interactive Mode:
+-----------------
+$ python main.py
+
+Enter your details:
+I am 25 years old, male, from Maharashtra.
+My family income is 3 lakh per year.
+I belong to OBC category.
+I completed Bachelor's in Engineering.
+I am unemployed and looking for government jobs.
+I am interested in technical and banking sectors.
+
+[Press Enter twice to submit]
+
+
+File Mode:
+----------
+$ python main.py user_input.txt
+
+
+Testing Individual Agents:
+---------------------------
+# Test profiling
+python -m agents.profiling_agent
+
+# Test scheme agent
+python -m agents.scheme_agent
+
+# Test exam agent
+python -m agents.exam_agent
+
+
+Building Vectorstores:
+-----------------------
+python setup.py --build-vectorstores
+
+Or in Python:
+from rag.scheme_vectorstore import build_scheme_vectorstore
+from rag.exam_vectorstore import build_exam_vectorstore
+
+build_scheme_vectorstore()
+build_exam_vectorstore()
+
+
+OUTPUT FORMAT
+=============
+
+Generated file: outputs/results_20260302_143022.json
+
+{
+  "user_profile": {
+    "age": 25,
+    "gender": "Male",
+    "state": "Maharashtra",
+    "income": "300000",
+    "caste": "OBC",
+    "education": "Bachelor's in Engineering",
+    "employment_status": "Unemployed",
+    "interests": "Technical, Banking"
+  },
+  "scheme_recommendations": "...",
+  "exam_recommendations": "...",
+  "missed_benefits_analysis": "...",
+  "errors": []
+}
+
+
+SYSTEM REQUIREMENTS
+===================
+
+✅ Python 3.8 or higher
+✅ 4GB RAM minimum (8GB recommended)
+✅ 2GB storage for dependencies
+✅ Internet connection (for APIs)
+✅ CPU only (no GPU needed)
+
+
+API KEYS REQUIRED
+=================
+
+🔑 GROQ_API_KEY
+   Get from: https://console.groq.com/
+   Purpose: LLM inference
+   Cost: Free tier available
+
+🔑 TAVILY_API_KEY
+   Get from: https://tavily.com/
+   Purpose: Web search
+   Cost: Free tier available
+
+🔑 HF_TOKEN (Optional)
+   Get from: https://huggingface.co/settings/tokens
+   Purpose: Model downloads
+   Cost: Free
+
+
+SUPPORT & DOCUMENTATION
+========================
+
+📖 Full Usage Guide: USAGE_GUIDE.md
+🏗️ Architecture Details: ARCHITECTURE.txt
+❓ Quick Start: README.md
+🐛 Troubleshooting: See USAGE_GUIDE.md
+
+For issues:
+1. Check setup: python setup.py --check
+2. Verify .env file has correct API keys
+3. Ensure PDFs are in data/ directories
+4. Rebuild vectorstores if needed
+
+
+PROJECT STATUS
+==============
+
+✅ Core System: Complete
+✅ All 7 Agents: Implemented
+✅ RAG System: Functional
+✅ Web Search: Integrated
+✅ Workflow: Orchestrated
+✅ I/O Handlers: Created
+✅ Documentation: Comprehensive
+
+Ready for deployment and testing!
+
+
+NEXT STEPS
+==========
+
+1. Add your API keys to .env
+2. Add government scheme and exam PDFs
+3. Run setup wizard
+4. Test the system
+5. Customize prompts as needed
+6. Add more PDF data over time
+7. Monitor and improve
+
+
+Happy Analyzing! 🎉

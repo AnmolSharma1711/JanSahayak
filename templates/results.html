@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+
+{% block title %}Analysis Results - JanSahayak{% endblock %}
+
+{% block content %}
+<section class="results-section">
+    <div class="container">
+        <!-- Success Banner -->
+        <div class="success-banner">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <h2>Analysis Complete!</h2>
+                <p>Your personalized government benefits report is ready</p>
+            </div>
+        </div>
+
+        <!-- User Profile Card -->
+        <div class="result-card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1; min-width: 250px;">
+                    <h3><i class="fas fa-user"></i> Your Profile</h3>
+                    {% set profile = result.user_profile %}
+                    {% if profile and profile is mapping %}
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666; line-height: 1.6;">
+                            {% set priority_keys = ['name', 'age', 'gender', 'state', 'education'] %}
+                            {% set shown = 0 %}
+                            {% for key in priority_keys %}
+                                {% if shown < 4 and key in profile and profile[key] and profile[key] != 'Not Provided' %}
+                                    <span style="display: inline-block; margin-right: 1.5rem; margin-bottom: 0.25rem;">
+                                        <strong>{{ key.replace('_', ' ').title() }}:</strong> {{ profile[key] }}
+                                    </span>
+                                    {% set shown = shown + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if shown == 0 %}
+                                <span style="color: #999; font-style: italic;">Processing profile...</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                <button class="btn-download" onclick="downloadResults()" style="flex-shrink: 0;">
+                    <i class="fas fa-file-pdf"></i> Download PDF Report
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="profile-grid">
+                    {% set profile = result.user_profile %}
+                    {% if profile and profile is mapping %}
+                        {% set priority_keys = ['name', 'age', 'gender', 'state', 'education', 'caste', 'income', 'employment_status', 'occupation'] %}
+                        
+                        <!-- Priority fields first -->
+                        {% for key in priority_keys %}
+                            {% if key in profile and profile[key] != 'Not Provided' %}
+                            <div class="profile-item">
+                                <span class="profile-label">{{ key.replace('_', ' ').title() }}</span>
+                                <span class="profile-value">{{ profile[key] }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Remaining fields -->
+                        {% for key, value in profile.items() %}
+                            {% if key not in ['raw_profile', 'user_input', 'error', 'note'] and key not in priority_keys and value != 'Not Provided' %}
+                            <div class="profile-item">
+                                <span class="profile-label">{{ key.replace('_', ' ').title() }}</span>
+                                <span class="profile-value">{{ value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if profile.items()|selectattr('1', 'ne', 'Not Provided')|rejectattr('0', 'in', ['raw_profile', 'user_input', 'error', 'note'])|list|length == 0 %}
+                            <p class="text-muted">No profile information extracted. Please provide more details in your input.</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">Profile information not available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Government Schemes -->
+        <div class="result-card">
+            <div class="card-header">
+                <h3><i class="fas fa-landmark"></i> Government Schemes for You</h3>
+            </div>
+            <div class="card-body">
+                {% if result.scheme_recommendations and result.scheme_recommendations != 'Profile unavailable' %}
+                    <div class="markdown-content">
+                        {{ result.scheme_recommendations | format_markdown | safe }}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No scheme recommendations available. Please add scheme PDFs to the database.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Competitive Exams -->
+        <div class="result-card">
+            <div class="card-header">
+                <h3><i class="fas fa-graduation-cap"></i> Competitive Exams for You</h3>
+            </div>
+            <div class="card-body">
+                {% if result.exam_recommendations and result.exam_recommendations != 'Profile unavailable' %}
+                    <div class="markdown-content">
+                        {{ result.exam_recommendations | format_markdown | safe }}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No exam recommendations available. Please add exam PDFs to the database.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Missed Benefits Analysis -->
+        <div class="result-card highlight">
+            <div class="card-header">
+                <h3><i class="fas fa-calculator"></i> Missed Benefits Analysis</h3>
+            </div>
+            <div class="card-body">
+                {% if result.missed_benefits_analysis and result.missed_benefits_analysis != 'Insufficient data' %}
+                    <div class="markdown-content">
+                        {{ result.missed_benefits_analysis | format_markdown | safe }}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Benefit calculation requires valid scheme data.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Errors (if any) -->
+        {% if result.errors and result.errors|length > 0 %}
+        <div class="result-card error-card">
+            <div class="card-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Notices</h3>
+            </div>
+            <div class="card-body">
+                <ul class="error-list">
+                    {% for error in result.errors %}
+                    <li><i class="fas fa-info-circle"></i> {{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('index') }}" class="btn-secondary">
+                <i class="fas fa-redo"></i> New Analysis
+            </a>
+            <a href="{{ url_for('history') }}" class="btn-secondary">
+                <i class="fas fa-history"></i> View History
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Hidden data for JavaScript -->
+<script type="text/javascript">
+    const SESSION_ID = "{{ session_id }}";
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadResults() {
+    // Show loading state
+    const btn = event.target.closest('button');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    btn.disabled = true;
+    
+    // Trigger PDF download
+    window.location.href = '/download/pdf/' + SESSION_ID;
+    
+    // Reset button after a delay
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    }, 2000);
+}
+</script>
+{% endblock %}

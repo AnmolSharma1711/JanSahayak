@@ -1,0 +1,26 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# RAG Indexes
+rag/scheme_index/
+rag/exam_index/
+
+# Outputs
+outputs/*.json
+
+# IDE
+.vscode/
+.idea/
+
+# Data files (optional - uncomment if PDFs are large)
+# data/schemes_pdfs/*.pdf
+# data/exams_pdfs/*.pdf

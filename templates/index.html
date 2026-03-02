@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+
+{% block title %}JanSahayak - Your Government Benefits Assistant{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles"></i> AI-Powered Analysis
+            </div>
+            <h1 class="hero-title">
+                Discover Your <span class="gradient-text">Government Benefits</span>
+            </h1>
+            <p class="hero-subtitle">
+                Get personalized recommendations for government schemes, competitive exams, 
+                and calculate benefits you might have missed - all powered by advanced AI agents.
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <h3>7</h3>
+                        <p>AI Agents</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-file-alt"></i>
+                    <div>
+                        <h3>1000+</h3>
+                        <p>Schemes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div>
+                        <h3>100+</h3>
+                        <p>Exams</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Input Section -->
+<section class="input-section">
+    <div class="container">
+        <div class="input-card">
+            <div class="card-header">
+                <h2><i class="fas fa-user-edit"></i> Tell Us About Yourself</h2>
+                <p>Provide your details to get personalized recommendations</p>
+            </div>
+            
+            <form id="analysisForm">
+                <div class="form-group">
+                    <label for="userInput">
+                        <i class="fas fa-info-circle"></i> Your Details
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="userInput" 
+                        name="user_input" 
+                        rows="10" 
+                        placeholder="Please provide the following information:
+
+• Age, Gender, State of residence
+• Income (annual family income)
+• Caste/Category (General/SC/ST/OBC/EWS)
+• Education qualification
+• Employment status (Student/Employed/Unemployed)
+• Career interests (for exam recommendations)
+• Any other relevant details
+
+Example:
+I am a 25-year-old male from Maharashtra. My family's annual income is around 3 lakh rupees. I belong to the OBC category. I completed my Bachelor's degree in Engineering with 70% marks. I am currently unemployed and looking for government job opportunities. I am interested in technical positions and banking sector jobs."
+                        required
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span> characters
+                    </div>
+                </div>
+
+                <!-- Quick Fill Buttons -->
+                <div class="quick-fill">
+                    <p><i class="fas fa-lightbulb"></i> Quick Fill Examples:</p>
+                    <div class="quick-fill-buttons">
+                        <button type="button" class="btn-quick" data-example="student">
+                            <i class="fas fa-user-graduate"></i> Student
+                        </button>
+                        <button type="button" class="btn-quick" data-example="farmer">
+                            <i class="fas fa-tractor"></i> Farmer
+                        </button>
+                        <button type="button" class="btn-quick" data-example="unemployed">
+                            <i class="fas fa-briefcase"></i> Job Seeker
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    <i class="fas fa-rocket"></i> Analyze My Profile
+                </button>
+            </form>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state" style="display: none;">
+                <div class="loading-spinner"></div>
+                <h3>Analyzing Your Profile...</h3>
+                <p>Our AI agents are working hard to find the best recommendations for you</p>
+                
+                <div class="agent-progress">
+                    <div class="agent-step">
+                        <div class="step-icon"><i class="fas fa-user"></i></div>
+                        <div class="step-info">
+                            <h4>Profiling Agent</h4>
+                            <p>Extracting your information...</p>
+                        </div>
+                    </div>
+                    <div class="agent-step">
+                        <div class="step-icon"><i class="fas fa-building"></i></div>
+                        <div class="step-info">
+                            <h4>Scheme Agent</h4>
+                            <p>Finding eligible schemes...</p>
+                        </div>
+                    </div>
+                    <div class="agent-step">
+                        <div class="step-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="step-info">
+                            <h4>Exam Agent</h4>
+                            <p>Recommending exams...</p>
+                        </div>
+                    </div>
+                    <div class="agent-step">
+                        <div class="step-icon"><i class="fas fa-calculator"></i></div>
+                        <div class="step-info">
+                            <h4>Benefit Calculator</h4>
+                            <p>Calculating missed benefits...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h3>1. Profile Analysis</h3>
+                <p>AI extracts and structures your information for accurate matching</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>2. Smart Search</h3>
+                <p>RAG + Live web search finds the most relevant schemes and exams</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>3. Personalized Results</h3>
+                <p>Get tailored recommendations with eligibility details and application steps</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>4. Benefit Analysis</h3>
+                <p>Discover what you missed and what you can claim now</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Example data
+const examples = {
+    student: `I am a 22-year-old female student from Karnataka. My family's annual income is around 2.5 lakh rupees. I belong to the SC category. I am currently pursuing my Bachelor's degree in Computer Science and will graduate next year. I am interested in government jobs in the IT sector and want to prepare for competitive exams like SSC CGL and banking exams.`,
+    
+    farmer: `I am a 45-year-old male farmer from Madhya Pradesh. My family's annual income is around 1.5 lakh rupees from agriculture. I belong to the OBC category. I own 3 acres of agricultural land. I am looking for government schemes related to farming subsidies, crop insurance, and financial assistance for farmers.`,
+    
+    unemployed: `I am a 28-year-old male from Uttar Pradesh. My family's annual income is around 4 lakh rupees. I belong to the General category. I completed my Master's degree in Business Administration 2 years ago. I am currently unemployed and seeking government job opportunities in banking, railways, or state PSC positions. I am also interested in skill development programs.`
+};
+
+// Quick fill buttons
+document.querySelectorAll('.btn-quick').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const example = this.dataset.example;
+        document.getElementById('userInput').value = examples[example];
+        updateCharCount();
+    });
+});
+
+// Character counter
+const textarea = document.getElementById('userInput');
+const charCount = document.getElementById('charCount');
+
+function updateCharCount() {
+    charCount.textContent = textarea.value.length;
+}
+
+textarea.addEventListener('input', updateCharCount);
+
+// Form submission
+document.getElementById('analysisForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const userInput = document.getElementById('userInput').value.trim();
+    
+    if (!userInput) {
+        alert('Please provide your details');
+        return;
+    }
+    
+    // Show loading state
+    document.getElementById('analysisForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    
+    try {
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: userInput })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Redirect to results page
+            window.location.href = '/result/' + data.session_id;
+        } else {
+            alert('Error: ' + data.error);
+            document.getElementById('analysisForm').style.display = 'block';
+            document.getElementById('loadingState').style.display = 'none';
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+        document.getElementById('analysisForm').style.display = 'block';
+        document.getElementById('loadingState').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

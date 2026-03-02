@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}About - JanSahayak{% endblock %}
+
+{% block content %}
+<section class="about-section">
+    <div class="container">
+        <div class="about-hero">
+            <h1>About <span class="gradient-text">JanSahayak</span></h1>
+            <p class="lead">Multi-Agent Government Intelligence System</p>
+        </div>
+
+        <div class="about-content">
+            <div class="about-card">
+                <h2><i class="fas fa-lightbulb"></i> What is JanSahayak?</h2>
+                <p>
+                    JanSahayak (जन सहायक - "People's Assistant") is an advanced AI-powered system designed to help 
+                    Indian citizens discover and access government benefits, schemes, and competitive exam opportunities. 
+                    Using state-of-the-art multi-agent architecture, we analyze your profile and provide personalized 
+                    recommendations.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <h2><i class="fas fa-robot"></i> How It Works</h2>
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h3>Profile Extraction</h3>
+                        <p>AI extracts structured information from your input using natural language processing</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h3>Intelligent Search</h3>
+                        <p>RAG (Retrieval Augmented Generation) + live web search finds relevant schemes and exams</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h3>Personalization</h3>
+                        <p>7 specialized AI agents work together to provide tailored recommendations</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h3>Benefit Analysis</h3>
+                        <p>Calculate missed benefits and get actionable insights for future applications</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agents-grid">
+                <h2 class="text-center"><i class="fas fa-users-cog"></i> Our AI Agents</h2>
+                <div class="agent-cards">
+                    <div class="agent-card">
+                        <i class="fas fa-user-check"></i>
+                        <h4>Profiling Agent</h4>
+                        <p>Extracts and structures user information for accurate eligibility matching</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-landmark"></i>
+                        <h4>Scheme Agent</h4>
+                        <p>Recommends government schemes based on eligibility criteria</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h4>Exam Agent</h4>
+                        <p>Suggests competitive exams aligned with your education and interests</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-search"></i>
+                        <h4>Search Agent</h4>
+                        <p>Performs live searches on government websites for latest information</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-database"></i>
+                        <h4>RAG Agent</h4>
+                        <p>Retrieves relevant information from vector database</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-file-pdf"></i>
+                        <h4>Document Agent</h4>
+                        <p>Processes PDFs and images for text extraction</p>
+                    </div>
+                    <div class="agent-card">
+                        <i class="fas fa-calculator"></i>
+                        <h4>Benefit Calculator</h4>
+                        <p>Estimates missed benefits and provides financial insights</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-stack">
+                <h2><i class="fas fa-code"></i> Technology Stack</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <i class="fas fa-brain"></i>
+                        <h4>Groq LLaMA 3</h4>
+                        <p>Fast LLM inference</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-link"></i>
+                        <h4>LangChain</h4>
+                        <p>Agent framework</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <h4>LangGraph</h4>
+                        <p>Workflow orchestration</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-database"></i>
+                        <h4>FAISS</h4>
+                        <p>Vector search</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-globe"></i>
+                        <h4>Tavily API</h4>
+                        <p>Live web search</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-python"></i>
+                        <h4>Python</h4>
+                        <p>Backend system</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-card">
+                <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Your data is processed locally</li>
+                    <li><i class="fas fa-check"></i> No personal information is stored permanently</li>
+                    <li><i class="fas fa-check"></i> API calls are secure and encrypted</li>
+                    <li><i class="fas fa-check"></i> Results are saved locally on your system</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

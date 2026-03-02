@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JanSahayak - Government Intelligence System{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-hands-helping"></i>
+                <span>JanSahayak</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('index') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Home
+                </a></li>
+                <li><a href="{{ url_for('about') }}" class="nav-link {% if request.path == '/about' %}active{% endif %}">
+                    <i class="fas fa-info-circle"></i> About
+                </a></li>
+                <li><a href="{{ url_for('history') }}" class="nav-link {% if request.path == '/history' %}active{% endif %}">
+                    <i class="fas fa-history"></i> History
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-hands-helping"></i> JanSahayak</h3>
+                    <p>Multi-Agent Government Intelligence System</p>
+                    <p class="text-muted">Powered by AI • Built with ❤️ for Citizens</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Government Schemes</li>
+                        <li><i class="fas fa-check"></i> Competitive Exams</li>
+                        <li><i class="fas fa-check"></i> Benefit Calculator</li>
+                        <li><i class="fas fa-check"></i> AI-Powered Analysis</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Technology</h4>
+                    <ul>
+                        <li><i class="fas fa-robot"></i> Groq LLaMA 3</li>
+                        <li><i class="fas fa-brain"></i> LangChain + LangGraph</li>
+                        <li><i class="fas fa-search"></i> RAG + Vector Search</li>
+                        <li><i class="fas fa-globe"></i> Live Web Search</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 JanSahayak. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

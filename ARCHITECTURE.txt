@@ -1,0 +1,330 @@
+"""
+JanSahayak Architecture Overview
+================================
+
+SYSTEM COMPONENTS
+-----------------
+
+1. AGENTS (agents/)
+   - profiling_agent.py     → User Profile Extraction
+   - scheme_agent.py        → Government Scheme Recommendations
+   - exam_agent.py          → Competitive Exam Recommendations
+   - search_agent.py        → Live Web Search (Tavily)
+   - rag_agent.py          → Vector Database Retrieval
+   - document_agent.py      → PDF/Image Text Extraction
+   - benefit_agent.py       → Missed Benefits Calculator
+
+2. PROMPTS (prompts/)
+   - profiling_prompt.py    → User profiling instructions
+   - scheme_prompt.py       → Scheme recommendation template
+   - exam_prompt.py         → Exam recommendation template
+   - rag_prompt.py          → RAG retrieval instructions
+
+3. RAG SYSTEM (rag/)
+   - embeddings.py          → HuggingFace embeddings (CPU)
+   - scheme_vectorstore.py  → FAISS store for schemes
+   - exam_vectorstore.py    → FAISS store for exams
+
+4. TOOLS (tools/)
+   - tavily_tool.py         → Live government website search
+
+5. WORKFLOW (graph/)
+   - workflow.py            → LangGraph orchestration
+
+6. I/O HANDLERS (agent_io/)
+   - profiling_io.py        → Profiling agent I/O
+   - scheme_io.py           → Scheme agent I/O
+   - exam_io.py             → Exam agent I/O
+   - benefit_io.py          → Benefit agent I/O
+
+7. DATA (data/)
+   - schemes_pdfs/          → Government scheme PDFs
+   - exams_pdfs/            → Competitive exam PDFs
+
+8. OUTPUTS (outputs/)
+   - results_*.json         → Generated analysis results
+
+9. CONFIGURATION
+   - config.py              → Configuration loader
+   - .env                   → API keys (user creates)
+   - requirements.txt       → Python dependencies
+
+10. ENTRY POINTS
+    - main.py               → Main application
+    - setup.py              → Setup wizard
+
+
+WORKFLOW EXECUTION
+------------------
+
+User Input
+    ↓
+[Profiling Agent]
+    ↓
+    ├─→ [Scheme Agent] ──→ [Benefit Agent] ──┐
+    │         ↓                               │
+    │     [RAG Search]                        │
+    │         ↓                               │
+    │   [Tavily Search]                       │
+    │                                         │
+    └─→ [Exam Agent] ────────────────────────┤
+              ↓                               │
+          [RAG Search]                        │
+              ↓                               │
+        [Tavily Search]                       │
+                                             ↓
+                                    [Final Output]
+                                             ↓
+                                   [JSON Results File]
+
+
+TECHNOLOGY STACK
+----------------
+
+LLM & AI:
+- Groq API (llama-3.3-70b-versatile) → Fast inference
+- LangChain → Agent framework
+- LangGraph → Workflow orchestration
+
+Embeddings & Search:
+- HuggingFace Transformers → sentence-transformers/all-MiniLM-L6-v2
+- FAISS (CPU) → Vector similarity search
+
+Web Search:
+- Tavily API → Government website search
+
+Document Processing:
+- PyPDF → PDF text extraction
+- Pytesseract → OCR for images
+- Pillow → Image processing
+
+Infrastructure:
+- Python 3.8+
+- CPU-only deployment (no GPU needed)
+- PyTorch CPU version
+
+
+DATA FLOW
+---------
+
+1. User Input Processing:
+   Raw Text → Profiling Agent → Structured JSON Profile
+
+2. Scheme Recommendation:
+   Profile → RAG Query → Vectorstore Search → Top-K Documents
+   Profile + Documents → Tavily Search (optional) → Web Results
+   Profile + Documents + Web Results → LLM → Recommendations
+
+3. Exam Recommendation:
+   Profile → RAG Query → Vectorstore Search → Top-K Documents
+   Profile + Documents → Tavily Search (optional) → Web Results
+   Profile + Documents + Web Results → LLM → Recommendations
+
+4. Benefit Calculation:
+   Profile + Scheme Recommendations → LLM → Missed Benefits Analysis
+
+5. Final Output:
+   All Results → JSON Compilation → File Save → User Display
+
+
+API INTERACTIONS
+----------------
+
+1. Groq API:
+   - Used by: All LLM-powered agents
+   - Model: llama-3.3-70b-versatile
+   - Purpose: Natural language understanding & generation
+   - Rate: Per-request basis
+
+2. Tavily API:
+   - Used by: search_agent, scheme_agent, exam_agent
+   - Purpose: Live government website search
+   - Filter: .gov.in domains preferred
+   - Depth: Advanced search mode
+
+3. HuggingFace:
+   - Used by: embeddings module
+   - Model: sentence-transformers/all-MiniLM-L6-v2
+   - Purpose: Document embeddings for RAG
+   - Local: Runs on CPU, cached after first download
+
+
+VECTORSTORE ARCHITECTURE
+------------------------
+
+Scheme Vectorstore (rag/scheme_index/):
+├── index.faiss          → FAISS index file
+├── index.pkl            → Metadata pickle
+└── [Embedded chunks from schemes_pdfs/]
+
+Exam Vectorstore (rag/exam_index/):
+├── index.faiss          → FAISS index file
+├── index.pkl            → Metadata pickle
+└── [Embedded chunks from exams_pdfs/]
+
+Embedding Dimension: 384
+Similarity Metric: Cosine similarity
+Chunk Size: Auto (from PyPDF)
+
+
+AGENT SPECIALIZATIONS
+---------------------
+
+1. Profiling Agent:
+   - Extraction-focused
+   - Low temperature (0.1)
+   - JSON output required
+   - No external tools
+
+2. Scheme Agent:
+   - RAG + Web search
+   - Temperature: 0.3
+   - Tools: Vectorstore, Tavily
+   - Output: Detailed scheme info
+
+3. Exam Agent:
+   - RAG + Web search
+   - Temperature: 0.3
+   - Tools: Vectorstore, Tavily
+   - Output: Detailed exam info
+
+4. Benefit Agent:
+   - Calculation-focused
+   - Temperature: 0.2
+   - No external tools
+   - Output: Financial analysis
+
+5. Search Agent:
+   - Web search only
+   - Tool: Tavily API
+   - Focus: .gov.in domains
+   - Output: Live search results
+
+6. RAG Agent:
+   - Vectorstore query only
+   - Tool: FAISS
+   - Similarity search
+   - Output: Relevant documents
+
+7. Document Agent:
+   - File processing
+   - Tools: PyPDF, Pytesseract
+   - Supports: PDF, Images
+   - Output: Extracted text
+
+
+SECURITY & PRIVACY
+------------------
+
+- API keys stored in .env (not committed to git)
+- User data processed locally except LLM calls
+- No data stored on external servers (except API providers)
+- PDF data remains local
+- Vectorstores are local
+- Output files saved locally
+
+
+SCALABILITY NOTES
+-----------------
+
+Current Setup (Single User):
+- Synchronous workflow
+- Local vectorstores
+- CPU processing
+
+Potential Scaling:
+- Add Redis for caching
+- Use cloud vectorstore (Pinecone, Weaviate)
+- Parallel agent execution
+- GPU acceleration for embeddings
+- Database for user profiles
+- API service deployment
+
+
+ERROR HANDLING
+--------------
+
+Each agent includes:
+- Try-catch blocks
+- Error state tracking
+- Graceful degradation
+- Partial results on failure
+- Error reporting in final output
+
+
+MONITORING & LOGGING
+--------------------
+
+Current:
+- Console print statements
+- Agent start/completion messages
+- Error messages
+- Final output summary
+
+Future Enhancement:
+- Structured logging (logging module)
+- Performance metrics
+- API usage tracking
+- User feedback collection
+
+
+EXTENSIBILITY
+-------------
+
+Adding New Agent:
+1. Create agent file in agents/
+2. Add prompt template in prompts/
+3. Create node function in workflow.py
+4. Add node to graph
+5. Define edges (connections)
+6. Optional: Create I/O handler
+
+Adding New Data Source:
+1. Create vectorstore module in rag/
+2. Add PDFs to data/ subdirectory
+3. Build vectorstore
+4. Create agent or modify existing
+
+Adding New Tool:
+1. Create tool in tools/
+2. Import in agent
+3. Use in agent logic
+
+
+PERFORMANCE BENCHMARKS (Typical)
+---------------------------------
+
+Vectorstore Building:
+- 10 PDFs: ~2-5 minutes
+- 100 PDFs: ~20-30 minutes
+
+Query Performance:
+- Profiling: ~1-2 seconds
+- RAG Search: ~0.5-1 second
+- LLM Call: ~1-3 seconds
+- Web Search: ~2-4 seconds
+- Full Workflow: ~10-20 seconds
+
+Memory Usage:
+- Base: ~500 MB
+- With models: ~2-3 GB
+- With large PDFs: +500 MB per 100 PDFs
+
+
+FUTURE ENHANCEMENTS
+-------------------
+
+1. Multilingual Support (Hindi, regional languages)
+2. Voice input/output
+3. Mobile app integration
+4. Database for user history
+5. Notification system for deadlines
+6. Document upload interface
+7. Real-time scheme updates
+8. Community feedback integration
+9. State-specific customization
+10. Integration with government portals
+
+
+END OF ARCHITECTURE DOCUMENT
+"""
