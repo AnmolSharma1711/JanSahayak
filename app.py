@@ -80,6 +80,7 @@ def analyze():
     try:
         # Get user input
         user_input = request.json.get('user_input', '')
+        structured_data = request.json.get('structured_data', None)
         
         if not user_input.strip():
             return jsonify({
@@ -90,15 +91,33 @@ def analyze():
         # Generate session ID
         session_id = str(uuid.uuid4())
         
-        # Store in session
+        # Store in session (including structured data if available)
         sessions[session_id] = {
             'status': 'processing',
             'input': user_input,
+            'structured_data': structured_data,
             'started_at': datetime.now().isoformat()
         }
         
         # Run workflow
         result = run_workflow(user_input)
+        
+        # If we have structured data and profiling failed, inject it
+        if structured_data and result.get('profile', {}).get('name') == 'N/A':
+            # Override profile with structured data
+            result['profile'] = {
+                'name': structured_data.get('name', 'N/A'),
+                'age': int(structured_data.get('age', 0)) if structured_data.get('age') else 'N/A',
+                'gender': structured_data.get('gender', 'N/A'),
+                'state': structured_data.get('state', 'N/A'),
+                'education': structured_data.get('education', 'N/A'),
+                'employment_status': structured_data.get('employment', 'N/A'),
+                'income': structured_data.get('income', 'N/A'),
+                'category': structured_data.get('category', 'N/A'),
+                'specialization': structured_data.get('specialization', 'N/A'),
+                'career_interest': structured_data.get('career_interest', 'N/A'),
+                'interests': structured_data.get('interests', [])
+            }
         
         # Update session
         sessions[session_id]['status'] = 'completed'

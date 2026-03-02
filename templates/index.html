@@ -50,57 +50,261 @@
         <div class="input-card">
             <div class="card-header">
                 <h2><i class="fas fa-user-edit"></i> Tell Us About Yourself</h2>
-                <p>Provide your details to get personalized recommendations</p>
+                <p>Fill out the form step by step to get personalized recommendations</p>
+            </div>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Personal Info</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Background</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Your Goals</div>
+                </div>
             </div>
             
             <form id="analysisForm">
-                <div class="form-group">
-                    <label for="userInput">
-                        <i class="fas fa-info-circle"></i> Your Details
-                        <span class="required">*</span>
-                    </label>
-                    <textarea 
-                        id="userInput" 
-                        name="user_input" 
-                        rows="10" 
-                        placeholder="Please provide the following information:
-
-• Age, Gender, State of residence
-• Income (annual family income)
-• Caste/Category (General/SC/ST/OBC/EWS)
-• Education qualification
-• Employment status (Student/Employed/Unemployed)
-• Career interests (for exam recommendations)
-• Any other relevant details
-
-Example:
-I am a 25-year-old male from Maharashtra. My family's annual income is around 3 lakh rupees. I belong to the OBC category. I completed my Bachelor's degree in Engineering with 70% marks. I am currently unemployed and looking for government job opportunities. I am interested in technical positions and banking sector jobs."
-                        required
-                    ></textarea>
-                    <div class="char-count">
-                        <span id="charCount">0</span> characters
+                <!-- Step 1: Personal Information -->
+                <div class="form-step active" data-step="1">
+                    <h3 class="step-title"><i class="fas fa-user"></i> Personal Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">
+                                Full Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                placeholder="Enter your full name"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="age">
+                                Age <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="age" 
+                                name="age" 
+                                placeholder="Your age"
+                                min="15"
+                                max="100"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">
+                                Gender <span class="required">*</span>
+                            </label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="state">
+                                State <span class="required">*</span>
+                            </label>
+                            <select id="state" name="state" required>
+                                <option value="">Select your state</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Manipur">Manipur</option>
+                                <option value="Meghalaya">Meghalaya</option>
+                                <option value="Mizoram">Mizoram</option>
+                                <option value="Nagaland">Nagaland</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Sikkim">Sikkim</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tripura">Tripura</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Delhi">Delhi</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Quick Fill Buttons -->
-                <div class="quick-fill">
-                    <p><i class="fas fa-lightbulb"></i> Quick Fill Examples:</p>
-                    <div class="quick-fill-buttons">
-                        <button type="button" class="btn-quick" data-example="student">
-                            <i class="fas fa-user-graduate"></i> Student
-                        </button>
-                        <button type="button" class="btn-quick" data-example="farmer">
-                            <i class="fas fa-tractor"></i> Farmer
-                        </button>
-                        <button type="button" class="btn-quick" data-example="unemployed">
-                            <i class="fas fa-briefcase"></i> Job Seeker
-                        </button>
+                
+                <!-- Step 2: Background Information -->
+                <div class="form-step" data-step="2">
+                    <h3 class="step-title"><i class="fas fa-briefcase"></i> Background Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="education">
+                                Education Level <span class="required">*</span>
+                            </label>
+                            <select id="education" name="education" required>
+                                <option value="">Select education level</option>
+                                <option value="Below 10th">Below 10th</option>
+                                <option value="10th Pass">10th Pass</option>
+                                <option value="12th Pass">12th Pass</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Graduate (Bachelor's)">Graduate (Bachelor's)</option>
+                                <option value="Post-Graduate (Master's)">Post-Graduate (Master's)</option>
+                                <option value="Doctorate (PhD)">Doctorate (PhD)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="employment">
+                                Employment Status <span class="required">*</span>
+                            </label>
+                            <select id="employment" name="employment" required>
+                                <option value="">Select employment status</option>
+                                <option value="Student">Student</option>
+                                <option value="Unemployed">Unemployed</option>
+                                <option value="Employed (Private)">Employed (Private)</option>
+                                <option value="Employed (Government)">Employed (Government)</option>
+                                <option value="Self-Employed">Self-Employed</option>
+                                <option value="Farmer">Farmer</option>
+                                <option value="Business Owner">Business Owner</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="income">
+                                Annual Family Income <span class="required">*</span>
+                            </label>
+                            <select id="income" name="income" required>
+                                <option value="">Select income range</option>
+                                <option value="Below 1 Lakh">Below ₹1 Lakh</option>
+                                <option value="1-2.5 Lakhs">₹1-2.5 Lakhs</option>
+                                <option value="2.5-5 Lakhs">₹2.5-5 Lakhs</option>
+                                <option value="5-8 Lakhs">₹5-8 Lakhs</option>
+                                <option value="8-10 Lakhs">₹8-10 Lakhs</option>
+                                <option value="Above 10 Lakhs">Above ₹10 Lakhs</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category">
+                                Category <span class="required">*</span>
+                            </label>
+                            <select id="category" name="category" required>
+                                <option value="">Select category</option>
+                                <option value="General">General</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="EWS">EWS</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="specialization">
+                            Field of Study/Work (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="specialization" 
+                            name="specialization" 
+                            placeholder="e.g., Engineering, Agriculture, Commerce, Arts"
+                        >
                     </div>
                 </div>
-
-                <button type="submit" class="btn-primary" id="submitBtn">
-                    <i class="fas fa-rocket"></i> Analyze My Profile
-                </button>
+                
+                <!-- Step 3: Goals and Interests -->
+                <div class="form-step" data-step="3">
+                    <h3 class="step-title"><i class="fas fa-bullseye"></i> What Are You Looking For?</h3>
+                    
+                    <div class="form-group">
+                        <label>
+                            Select Your Interests <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="interest" value="schemes" checked>
+                                <span><i class="fas fa-handshake"></i> Government Schemes & Benefits</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="interest" value="exams">
+                                <span><i class="fas fa-graduation-cap"></i> Competitive Exams</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="career_interest">
+                            Career/Sector Interest (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="career_interest" 
+                            name="career_interest" 
+                            placeholder="e.g., Banking, Railways, Agriculture, IT, Teaching"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="additional_info">
+                            Additional Information (Optional)
+                        </label>
+                        <textarea 
+                            id="additional_info" 
+                            name="additional_info" 
+                            rows="4" 
+                            placeholder="Any other details you'd like to share - disabilities, specific requirements, land ownership, etc."
+                        ></textarea>
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <strong>Privacy Note:</strong> Your information is used only for generating recommendations and is not stored permanently.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button type="button" class="btn-secondary" id="prevBtn" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn-primary" id="nextBtn">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn-primary" id="submitBtn" style="display: none;">
+                        <i class="fas fa-rocket"></i> Analyze My Profile
+                    </button>
+                </div>
             </form>
 
             <!-- Loading State -->
@@ -184,43 +388,147 @@ I am a 25-year-old male from Maharashtra. My family's annual income is around 3 
 
 {% block extra_js %}
 <script>
-// Example data
-const examples = {
-    student: `I am a 22-year-old female student from Karnataka. My family's annual income is around 2.5 lakh rupees. I belong to the SC category. I am currently pursuing my Bachelor's degree in Computer Science and will graduate next year. I am interested in government jobs in the IT sector and want to prepare for competitive exams like SSC CGL and banking exams.`,
-    
-    farmer: `I am a 45-year-old male farmer from Madhya Pradesh. My family's annual income is around 1.5 lakh rupees from agriculture. I belong to the OBC category. I own 3 acres of agricultural land. I am looking for government schemes related to farming subsidies, crop insurance, and financial assistance for farmers.`,
-    
-    unemployed: `I am a 28-year-old male from Uttar Pradesh. My family's annual income is around 4 lakh rupees. I belong to the General category. I completed my Master's degree in Business Administration 2 years ago. I am currently unemployed and seeking government job opportunities in banking, railways, or state PSC positions. I am also interested in skill development programs.`
-};
+// Multi-step form handling
+let currentStep = 1;
+const totalSteps = 3;
 
-// Quick fill buttons
-document.querySelectorAll('.btn-quick').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const example = this.dataset.example;
-        document.getElementById('userInput').value = examples[example];
-        updateCharCount();
+// Step navigation
+function showStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.form-step').forEach(stepEl => {
+        stepEl.classList.remove('active');
     });
-});
-
-// Character counter
-const textarea = document.getElementById('userInput');
-const charCount = document.getElementById('charCount');
-
-function updateCharCount() {
-    charCount.textContent = textarea.value.length;
+    
+    // Show current step
+    document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
+    
+    // Update step indicators
+    document.querySelectorAll('.step').forEach((stepEl, index) => {
+        if (index + 1 < step) {
+            stepEl.classList.add('completed');
+            stepEl.classList.remove('active');
+        } else if (index + 1 === step) {
+            stepEl.classList.add('active');
+            stepEl.classList.remove('completed');
+        } else {
+            stepEl.classList.remove('active', 'completed');
+        }
+    });
+    
+    // Update buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (step === 1) {
+        prevBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = 'inline-block';
+    }
+    
+    if (step === totalSteps) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'inline-block';
+    } else {
+        nextBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'none';
+    }
+    
+    currentStep = step;
 }
 
-textarea.addEventListener('input', updateCharCount);
+// Validate current step
+function validateStep(step) {
+    const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+    const requiredInputs = stepEl.querySelectorAll('[required]');
+    
+    for (let input of requiredInputs) {
+        if (!input.value.trim()) {
+            input.focus();
+            input.classList.add('error');
+            setTimeout(() => input.classList.remove('error'), 2000);
+            return false;
+        }
+    }
+    
+    // Step 3: Check if at least one interest is selected
+    if (step === 3) {
+        const interests = document.querySelectorAll('input[name="interest"]:checked');
+        if (interests.length === 0) {
+            alert('Please select at least one interest (Schemes or Exams)');
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// Next button
+document.getElementById('nextBtn').addEventListener('click', function() {
+    if (validateStep(currentStep)) {
+        showStep(currentStep + 1);
+    }
+});
+
+// Previous button
+document.getElementById('prevBtn').addEventListener('click', function() {
+    showStep(currentStep - 1);
+});
 
 // Form submission
 document.getElementById('analysisForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const userInput = document.getElementById('userInput').value.trim();
-    
-    if (!userInput) {
-        alert('Please provide your details');
+    if (!validateStep(currentStep)) {
         return;
+    }
+    
+    // Collect all form data
+    const formData = {
+        name: document.getElementById('name').value.trim(),
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        state: document.getElementById('state').value,
+        education: document.getElementById('education').value,
+        employment: document.getElementById('employment').value,
+        income: document.getElementById('income').value,
+        category: document.getElementById('category').value,
+        specialization: document.getElementById('specialization').value.trim(),
+        career_interest: document.getElementById('career_interest').value.trim(),
+        additional_info: document.getElementById('additional_info').value.trim()
+    };
+    
+    // Get selected interests
+    const interests = [];
+    document.querySelectorAll('input[name="interest"]:checked').forEach(cb => {
+        interests.push(cb.value);
+    });
+    formData.interests = interests;
+    
+    // Create natural language text for the workflow
+    let userInput = `My name is ${formData.name}. I am a ${formData.age}-year-old ${formData.gender} from ${formData.state}. `;
+    userInput += `My family's annual income is ${formData.income}. I belong to the ${formData.category} category. `;
+    userInput += `My education level is ${formData.education}. `;
+    userInput += `I am currently ${formData.employment}. `;
+    
+    if (formData.specialization) {
+        userInput += `I have studied/work in ${formData.specialization}. `;
+    }
+    
+    if (formData.career_interest) {
+        userInput += `I am interested in ${formData.career_interest} sector. `;
+    }
+    
+    if (interests.includes('schemes')) {
+        userInput += `I am looking for government schemes and benefits that I may be eligible for. `;
+    }
+    
+    if (interests.includes('exams')) {
+        userInput += `I am also interested in competitive exam recommendations. `;
+    }
+    
+    if (formData.additional_info) {
+        userInput += `Additional information: ${formData.additional_info}`;
     }
     
     // Show loading state
@@ -233,7 +541,10 @@ document.getElementById('analysisForm').addEventListener('submit', async functio
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_input: userInput })
+            body: JSON.stringify({ 
+                user_input: userInput,
+                structured_data: formData
+            })
         });
         
         const data = await response.json();
@@ -245,12 +556,17 @@ document.getElementById('analysisForm').addEventListener('submit', async functio
             alert('Error: ' + data.error);
             document.getElementById('analysisForm').style.display = 'block';
             document.getElementById('loadingState').style.display = 'none';
+            showStep(1); // Go back to first step
         }
     } catch (error) {
         alert('Error: ' + error.message);
         document.getElementById('analysisForm').style.display = 'block';
         document.getElementById('loadingState').style.display = 'none';
+        showStep(1); // Go back to first step
     }
 });
+
+// Initialize
+showStep(1);
 </script>
 {% endblock %}
