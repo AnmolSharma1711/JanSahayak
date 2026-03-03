@@ -24,17 +24,21 @@ app.secret_key = os.urandom(24)  # For session management
 # Store active sessions
 sessions = {}
 
-# Global vectorstores (loaded once at startup)
+# Global vectorstores (loaded on first use for faster startup)
 SCHEME_VECTORSTORE = None
 EXAM_VECTORSTORE = None
+VECTORSTORES_INITIALIZED = False
 
 
 def initialize_vectorstores():
-    """Load vectorstores once at startup to avoid repeated loading"""
-    global SCHEME_VECTORSTORE, EXAM_VECTORSTORE
+    """Load vectorstores lazily on first use to avoid blocking port binding"""
+    global SCHEME_VECTORSTORE, EXAM_VECTORSTORE, VECTORSTORES_INITIALIZED
+    
+    if VECTORSTORES_INITIALIZED:
+        return  # Already initialized
     
     print("\n" + "="*70)
-    print("📚 Initializing Vector Stores")
+    print("📚 Initializing Vector Stores (lazy loading)")
     print("="*70)
     
     # Load scheme vectorstore
@@ -57,6 +61,7 @@ def initialize_vectorstores():
         print("   Will use web search only for exams")
         EXAM_VECTORSTORE = None
     
+    VECTORSTORES_INITIALIZED = True
     print("="*70 + "\n")
 
 
@@ -143,6 +148,9 @@ def analyze():
                 'success': False,
                 'error': 'TAVILY_API_KEY is not configured. Please set environment variables on Render.'
             }), 500
+        
+        # Initialize vectorstores lazily on first request
+        initialize_vectorstores()
         
         # Get user input
         user_input = request.json.get('user_input', '')
@@ -565,11 +573,10 @@ if __name__ == '__main__':
     else:
         print("✅ HF_TOKEN is configured")
     
-    # Initialize vectorstores once at startup
-    initialize_vectorstores()
-    
-    print(f"\n📱 Access the application at: http://localhost:{port}")
+    print(f"\n📱 Starting Flask server on port {port}...")
     print(f"🌍 Environment: {'Production' if is_production else 'Development'}")
+    print("🔄 Vectorstores will be loaded on first request")
     print("🛑 Press CTRL+C to stop the server\n")
     
-    app.run(debug=not is_production, host='0.0.0.0', port=port)
+    # Start Flask FIRST to bind to port, then load vectorstores in background
+    app.run(debug=not is_production, host='0.0.0.0', port=port, threaded=True)
