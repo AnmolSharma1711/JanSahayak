@@ -1,3 +1,12 @@
+---
+title: JanSahayak
+emoji: 🙏
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # 🙏 JanSahayak - AI-Powered Government Schemes & Exams Assistant
 
 > Your personal AI assistant for discovering government schemes and competitive exam opportunities in India
