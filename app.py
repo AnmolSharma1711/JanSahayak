@@ -29,6 +29,9 @@ SCHEME_VECTORSTORE = None
 EXAM_VECTORSTORE = None
 VECTORSTORES_INITIALIZED = False
 
+# Check if running on a memory-constrained platform
+SKIP_VECTORSTORES = os.environ.get('SKIP_VECTORSTORES', 'false').lower() == 'true'
+
 
 def initialize_vectorstores():
     """Load vectorstores lazily on first use to avoid blocking port binding"""
@@ -37,13 +40,27 @@ def initialize_vectorstores():
     if VECTORSTORES_INITIALIZED:
         return  # Already initialized
     
+    # Skip vectorstore loading on memory-constrained platforms (use web search only)
+    if SKIP_VECTORSTORES:
+        print("\n" + "="*70)
+        print("⚡ LIGHTWEIGHT MODE: Skipping vectorstore loading")
+        print("="*70)
+        print("✅ Using Tavily web search only (no embeddings model)")
+        print("✅ Low memory usage (<200MB)")
+        print("✅ Real-time, up-to-date information")
+        print("="*70 + "\n")
+        SCHEME_VECTORSTORE = None
+        EXAM_VECTORSTORE = None
+        VECTORSTORES_INITIALIZED = True
+        return
+    
     print("\n" + "="*70)
     print("📚 Initializing Vector Stores (lazy loading)")
     print("="*70)
     
     # Load scheme vectorstore
     try:
-        from rag.vectorstore_loader import load_scheme_vectorstore
+        from rag.scheme_vectorstore import load_scheme_vectorstore
         SCHEME_VECTORSTORE = load_scheme_vectorstore()
         print("✅ Scheme vectorstore loaded successfully")
     except Exception as e:
@@ -53,7 +70,7 @@ def initialize_vectorstores():
     
     # Load exam vectorstore
     try:
-        from rag.vectorstore_loader import load_exam_vectorstore
+        from rag.exam_vectorstore import load_exam_vectorstore
         EXAM_VECTORSTORE = load_exam_vectorstore()
         print("✅ Exam vectorstore loaded successfully")
     except Exception as e:

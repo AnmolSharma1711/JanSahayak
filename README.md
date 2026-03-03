@@ -1,174 +1,196 @@
-# 🧠 JanSahayak - Multi-Agent Government Intelligence System
+# 🙏 JanSahayak - AI-Powered Government Schemes & Exams Assistant
 
-An intelligent multi-agent system for Indian government schemes and exam recommendations using LangChain, LangGraph, and Groq API.
+> Your personal AI assistant for discovering government schemes and competitive exam opportunities in India
 
-## ✨ Now with Beautiful Web UI!
+[![Hugging Face Spaces](https://img.shields.io/badge/🤗-Hugging%20Face-yellow)](https://huggingface.co/spaces)
+[![Flask](https://img.shields.io/badge/Flask-2.3+-green)](https://flask.palletsprojects.com/)
+[![LangChain](https://img.shields.io/badge/LangChain-Latest-blue)](https://www.langchain.com/)
 
-Access JanSahayak through a modern, intuitive web interface with real-time progress tracking, interactive forms, and beautiful visualizations.
+---
 
-**Quick Start:** `python app.py` → **http://localhost:5000**
+## 🌟 Features
 
-![Modern UI](https://img.shields.io/badge/UI-Modern%20%26%20Beautiful-purple)
-![Flask](https://img.shields.io/badge/Flask-Web%20App-green)
-![Responsive](https://img.shields.io/badge/Design-Responsive-blue)
+### 🤖 Multi-Agent AI System
+- **Profiling Agent**: Extracts structured user information
+- **Scheme Agent**: Recommends relevant government schemes  
+- **Exam Agent**: Suggests competitive exams based on qualifications
+- **RAG Agent**: Retrieves information from curated document database
 
-## 🎯 Features
+### 💡 Intelligent Capabilities
+- ✅ Natural language understanding of user profiles
+- ✅ Smart recommendations based on eligibility criteria
+- ✅ RAG (Retrieval-Augmented Generation) with FAISS vectorstore
+- ✅ Real-time web search via Tavily API
+- ✅ PDF generation for saving recommendations
+- ✅ Beautiful web interface with modern UI
 
-- **User Profiling Agent**: Extracts structured user information
-- **Scheme Recommendation Agent**: RAG-based scheme matching
-- **Exam Recommendation Agent**: Competitive exam guidance
-- **Web Search Agent**: Live government website search via Tavily
-- **RAG Retrieval Agent**: Vector-based document search
-- **Document Processing Agent**: PDF and image text extraction
-- **Missed Benefits Calculator**: Estimates unclaimed benefits
+---
 
-## 🏗️ Architecture
+## 🚀 Deploy to Hugging Face Spaces (Recommended)
 
-```
-User Input → Profiling Agent
-              ↓
-         ┌────────────────┐
-         ↓                ↓
-    Scheme Agent     Exam Agent
-         ↓
-    Benefit Agent
-         ↓
-    Final JSON Output
-```
+### Why Hugging Face Spaces?
+- ✅ **16GB RAM for FREE** (perfect for RAG apps!)
+- ✅ Built for ML/AI applications
+- ✅ Easy Git-based deployment
+- ✅ Public URL instantly
+- ✅ Auto-rebuild on push
 
-## 📦 Installation
+### Quick Deploy Steps:
 
-1. Create virtual environment:
+1. **Create Space** on [huggingface.co/spaces](https://huggingface.co/spaces)
+   - Click "Create new Space"
+   - Name: `jansahayak`
+   - SDK: Select "Docker" or "Gradio"
+   - Hardware: CPU basic (Free)
+
+2. **Connect GitHub Repository**
+   - Settings → Link to GitHub
+   - Select this repository
+   - Enable auto-sync
+
+3. **Add Secrets** (Settings → Variables)
+   ```
+   GROQ_API_KEY=your_groq_key
+   TAVILY_API_KEY=your_tavily_key  
+   HF_TOKEN=your_hf_token (optional)
+   SKIP_VECTORSTORES=false
+   ```
+
+4. **Push & Deploy!**
+   ```bash
+   git push origin main
+   ```
+
+Your app will be live at: `https://huggingface.co/spaces/YOUR_USERNAME/jansahayak`
+
+---
+
+## 🛠️ Local Development
+
 ```bash
+# Clone and setup
+git clone https://github.com/YOUR_USERNAME/JanSahayak.git
+cd JanSahayak
+
+# Create virtual environment
 python -m venv .venv
-.venv\Scripts\activate  # Windows
-```
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
 
-2. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-3. Configure API keys:
-```bash
+# Configure API keys
 cp .env.example .env
-# Edit .env with your API keys
-```
+# Edit .env with your keys
 
-4. Add government scheme and exam PDFs:
-- Place scheme PDFs in `data/schemes_pdfs/`
-- Place exam PDFs in `data/exams_pdfs/`
+# Build vectorstores (optional - if you have PDFs)
+python init_embeddings.py
 
-5. Build vector stores:
-```bash
-python -c "from rag.scheme_vectorstore import build_scheme_vectorstore; build_scheme_vectorstore()"
-python -c "from rag.exam_vectorstore import build_exam_vectorstore; build_exam_vectorstore()"
-```
-
-## 🚀 Usage
-
-### Web Interface (Recommended)
-
-Start the Flask web application:
-
-```bash
+# Run app
 python app.py
+# or use launcher scripts: start_web.bat (Windows) / ./start_web.sh (Linux/Mac)
 ```
 
-Then open your browser and go to: **http://localhost:5000**
+Visit `http://localhost:5000`
 
-Features:
-- Beautiful, modern UI
-- Interactive form with examples
-- Real-time progress tracking
-- Results visualization
-- Download reports
-- View analysis history
+---
 
-### Command Line Interface
+## 🔑 Get API Keys
 
-For batch processing or scripting:
+| Service | URL | Free Tier | Used For |
+|---------|-----|-----------|----------|
+| **Groq** | [console.groq.com](https://console.groq.com) | ✅ Yes | LLM Inference |
+| **Tavily** | [tavily.com](https://tavily.com) | 1000 searches/mo | Web Search |
+| **HuggingFace** | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) | ✅ Yes | Model Downloads |
 
-```bash
-python main.py
-```
+---
 
-## 🔑 API Keys Required
+## 💾 Adding Custom Documents
 
-- **Groq API**: https://console.groq.com/
-- **Tavily API**: https://tavily.com/
-- **HuggingFace Token**: https://huggingface.co/settings/tokens
+### Government Schemes PDFs
+1. Place PDFs in `data/schemes_pdfs/`
+2. Run `python init_embeddings.py`
+3. Restart app
 
-## 🌐 Deployment
+### Exam Information PDFs
+1. Place PDFs in `data/exams_pdfs/`
+2. Run `python init_embeddings.py`
+3. Restart app
 
-Deploy JanSahayak to the cloud using one of these platforms:
+Automatically indexed and searchable via RAG!
 
-### Render (Recommended - Easiest)
+---
 
-1. Fork/push repository to GitHub
-2. Create account at [render.com](https://render.com)
-3. Click "New +" → "Blueprint"
-4. Connect your repository
-5. Render auto-detects `render.yaml` configuration
-6. Add environment variables in dashboard:
-   - `GROQ_API_KEY`
-   - `TAVILY_API_KEY`
-   - `HF_TOKEN`
-7. Click "Apply" - your app will be live in minutes!
+## 🧪 Technology Stack
 
-**Cost**: Free tier available (512MB RAM, spins down after inactivity)
+- **Backend**: Flask
+- **AI**: LangChain + LangGraph  
+- **LLM**: Groq (Llama 3.3 70B)
+- **Embeddings**: sentence-transformers/all-MiniLM-L6-v2
+- **Vector DB**: FAISS (local)
+- **Search**: Tavily API
+- **Frontend**: HTML5 + CSS3 + JavaScript
 
-### Heroku
-
-1. Install [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
-2. Login and create app:
-```bash
-heroku login
-heroku create your-app-name
-```
-3. Set environment variables:
-```bash
-heroku config:set GROQ_API_KEY=your_key
-heroku config:set TAVILY_API_KEY=your_key
-heroku config:set HF_TOKEN=your_token
-```
-4. Deploy:
-```bash
-git push heroku main
-```
-
-**Cost**: Eco dynos ($5/month), includes free hours
-
-### Docker
-
-Build and run locally or on any container platform:
-
-```bash
-docker-compose up --build
-# OR
-docker build -t jansahayak .
-docker run -p 5000:5000 --env-file .env jansahayak
-```
-
-**Platforms**: AWS ECS, Google Cloud Run, Azure Container Instances, DigitalOcean App Platform
-
-### Vercel (Limited Support)
-
-⚠️ **Note**: Vercel has significant limitations for ML applications:
-- 50MB size limit (this app is ~200MB with dependencies)
-- 10-second timeout (agent workflows can take 20-30s)
-- Not recommended for production
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide with troubleshooting, security best practices, and platform comparisons.
+---
 
 ## 📁 Project Structure
 
-See code comments for detailed module documentation.
+```
+JanSahayak/
+├── app.py                    # Flask web app
+├── main.py                   # CLI interface
+├── agents/                   # AI agents
+│   ├── profiling_agent.py
+│   ├── scheme_agent.py
+│   ├── exam_agent.py
+│   └── rag_agent.py
+├── rag/                      # RAG components
+│   ├── embeddings.py
+│   ├── scheme_vectorstore.py
+│   └── exam_vectorstore.py
+├── data/                     # Documents
+│   ├── schemes_pdfs/
+│   └── exams_pdfs/
+├── templates/                # HTML templates
+└── static/                   # CSS/JS
+```
 
-## 🎯 CPU-Only Deployment
+---
 
-This system runs entirely on CPU using:
-- HuggingFace sentence-transformers for embeddings
-- PyTorch CPU version
-- FAISS CPU for vector search
-- Groq API for LLM inference (no local GPU needed)
+## 🐛 Troubleshooting
+
+**Memory issues on local machine?**
+```env
+# Set in .env
+SKIP_VECTORSTORES=true
+```
+Uses web search only (no embeddings needed)
+
+**Vectorstore errors?**
+```bash
+rm -rf rag/scheme_index rag/exam_index
+python init_embeddings.py
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Fork → Create branch → Submit PR
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## 🙏 Acknowledgments
+
+Built with [LangChain](https://www.langchain.com/), [Groq](https://groq.com/), [Tavily](https://tavily.com/), and ❤️
+
+---
+
+Made for the people of India 🇮🇳

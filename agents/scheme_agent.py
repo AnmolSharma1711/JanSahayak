@@ -1,13 +1,13 @@
 """
 Scheme Recommendation Agent
 Provides RAG-based government scheme recommendations
-Supports both FAISS and Pinecone backends
+Uses FAISS for local vector storage
 """
 
 import json
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
-from rag.vectorstore_loader import load_scheme_vectorstore
+from rag.scheme_vectorstore import load_scheme_vectorstore
 from prompts.scheme_prompt import SCHEME_PROMPT
 from tools.tavily_tool import government_focused_search
 from config import GROQ_API_KEY

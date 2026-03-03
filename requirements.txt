@@ -5,8 +5,6 @@ langgraph
 langchain-groq
 tavily-python
 faiss-cpu
-pinecone-client
-langchain-pinecone
 transformers
 sentence-transformers
 pypdf
