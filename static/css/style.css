@@ -536,6 +536,20 @@ textarea:focus {
     line-height: 1.8;
 }
 
+.markdown-content h2 {
+    color: var(--primary);
+    margin: 35px 0 20px;
+    font-size: 1.6rem;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--primary);
+}
+
+.markdown-content h3 {
+    color: var(--dark);
+    margin: 28px 0 16px;
+    font-size: 1.35rem;
+}
+
 .markdown-content h4 {
     color: var(--primary);
     margin: 25px 0 15px;
@@ -545,6 +559,155 @@ textarea:focus {
 .markdown-content strong {
     color: var(--dark);
     font-weight: 600;
+}
+
+/* Emoji icons */
+.markdown-content h2::before,
+.markdown-content h3::before {
+    margin-right: 8px;
+}
+
+/* Lists within markdown */
+.markdown-content ul {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.markdown-content ul li {
+    margin: 10px 0;
+    line-height: 1.7;
+}
+
+/* Checkmark lists */
+.markdown-content ul li:has(> :first-child:is(em, strong):contains("✓")),
+.markdown-content ul li:has(> :first-child:is(em, strong):contains("✅")) {
+    list-style: none;
+    margin-left: -15px;
+    padding: 8px 12px;
+    background: #f0fdf4;
+    border-left: 3px solid var(--success);
+    border-radius: 5px;
+}
+
+/* Warning items */
+.markdown-content ul li:has(> :first-child:is(em, strong):contains("⚠️")),
+.markdown-content ul li:has(> :first-child:is(em, strong):contains("❌")) {
+    list-style: none;
+    margin-left: -15px;
+    padding: 8px 12px;
+    background: #fff7ed;
+    border-left: 3px solid var(--warning);
+    border-radius: 5px;
+}
+
+/* Step-by-step sections */
+.markdown-content p:contains("STEP") {
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 20px;
+    font-size: 1.1rem;
+}
+
+/* Links in markdown - make them stand out */
+.markdown-content a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 2px 6px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.markdown-content a:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Inline code or specific fields */
+.markdown-content code {
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--danger);
+    font-family: 'Courier New', monospace;
+}
+
+/* Block quotes for important notes */
+.markdown-content blockquote {
+    border-left: 4px solid var(--primary);
+    padding: 15px 20px;
+    margin: 20px 0;
+    background: #f9fafb;
+    border-radius: 5px;
+}
+
+/* Tables if any */
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.markdown-content table th {
+    background: var(--primary);
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+.markdown-content table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.markdown-content table tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+/* Horizontal rules between schemes/exams */
+.markdown-content hr {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 40px 0;
+}
+
+/* Nested lists for detailed steps */
+.markdown-content ol {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+
+.markdown-content ol li {
+    margin: 12px 0;
+    padding-left: 8px;
+}
+
+.markdown-content ol ol {
+    margin-top: 10px;
+}
+
+/* Highlight important sections */
+.markdown-content p > strong:first-child {
+    display: inline-block;
+    min-width: 150px;
+    color: var(--primary);
+}
+
+/* Better spacing for content sections */
+.markdown-content > * + * {
+    margin-top: 15px;
+}
+
+/* Contact/support boxes */
+.markdown-content p:contains("📞"),
+.markdown-content p:contains("📱"),
+.markdown-content p:contains("📧") {
+    background: #eff6ff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
 }
 
 .empty-state {
