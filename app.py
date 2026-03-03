@@ -39,7 +39,7 @@ def initialize_vectorstores():
     
     # Load scheme vectorstore
     try:
-        from rag.scheme_vectorstore import load_scheme_vectorstore
+        from rag.vectorstore_loader import load_scheme_vectorstore
         SCHEME_VECTORSTORE = load_scheme_vectorstore()
         print("✅ Scheme vectorstore loaded successfully")
     except Exception as e:
@@ -49,7 +49,7 @@ def initialize_vectorstores():
     
     # Load exam vectorstore
     try:
-        from rag.exam_vectorstore import load_exam_vectorstore
+        from rag.vectorstore_loader import load_exam_vectorstore
         EXAM_VECTORSTORE = load_exam_vectorstore()
         print("✅ Exam vectorstore loaded successfully")
     except Exception as e:

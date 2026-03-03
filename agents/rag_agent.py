@@ -1,11 +1,11 @@
 """
 RAG Retrieval Agent
 Dedicated agent for vector database queries
+Supports both FAISS and Pinecone backends
 """
 
 import json
-from rag.scheme_vectorstore import load_scheme_vectorstore
-from rag.exam_vectorstore import load_exam_vectorstore
+from rag.vectorstore_loader import load_scheme_vectorstore, load_exam_vectorstore
 
 
 def run_rag_agent(query: str, database: str = "schemes", k: int = 5) -> dict:

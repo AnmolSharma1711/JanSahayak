@@ -1,12 +1,13 @@
 """
 Exam Recommendation Agent
 Provides competitive exam recommendations based on student profile
+Supports both FAISS and Pinecone backends
 """
 
 import json
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
-from rag.exam_vectorstore import load_exam_vectorstore
+from rag.vectorstore_loader import load_exam_vectorstore
 from prompts.exam_prompt import EXAM_PROMPT
 from tools.tavily_tool import government_focused_search
 from config import GROQ_API_KEY
