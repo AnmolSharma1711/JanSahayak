@@ -31,24 +31,49 @@
 ### Why Hugging Face Spaces?
 - ✅ **16GB RAM for FREE** (perfect for RAG apps!)
 - ✅ Built for ML/AI applications
-- ✅ Easy Git-based deployment
+- ✅ Git-based deployment
 - ✅ Public URL instantly
-- ✅ Auto-rebuild on push
+- ✅ Persistent storage
 
 ### Quick Deploy Steps:
+
+**Method 1: Using HF CLI (Easiest)**
+
+```bash
+# Install HF CLI
+pip install huggingface_hub[cli]
+
+# Login
+huggingface-cli login
+
+# Create Space and push
+huggingface-cli repo create jansahayak --type space --space_sdk gradio
+git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/jansahayak
+git push hf main
+```
+
+**Method 2: Manual Setup**
 
 1. **Create Space** on [huggingface.co/spaces](https://huggingface.co/spaces)
    - Click "Create new Space"
    - Name: `jansahayak`
-   - SDK: Select "Docker" or "Gradio"
-   - Hardware: CPU basic (Free)
+   - SDK: Select "Gradio" (works with Flask)
+   - Hardware: CPU basic (Free - 16GB RAM!)
+   - License: MIT
 
-2. **Connect GitHub Repository**
-   - Settings → Link to GitHub
-   - Select this repository
-   - Enable auto-sync
+2. **Clone YOUR Space repo** (not GitHub!)
+   ```bash
+   git clone https://huggingface.co/spaces/YOUR_USERNAME/jansahayak
+   cd jansahayak
+   ```
 
-3. **Add Secrets** (Settings → Variables)
+3. **Copy your project files**
+   ```bash
+   # Copy all files from your JanSahayak folder to the cloned space folder
+   cp -r /path/to/JanSahayak/* .
+   ```
+
+4. **Add Environment Variables** (Space Settings → Variables and secrets)
    ```
    GROQ_API_KEY=your_groq_key
    TAVILY_API_KEY=your_tavily_key  
@@ -56,12 +81,20 @@
    SKIP_VECTORSTORES=false
    ```
 
-4. **Push & Deploy!**
+5. **Push to Space**
    ```bash
-   git push origin main
+   git add .
+   git commit -m "Initial commit"
+   git push
    ```
 
 Your app will be live at: `https://huggingface.co/spaces/YOUR_USERNAME/jansahayak`
+
+### Important Notes:
+- HF Spaces uses its own Git repo (not GitHub directly)
+- App runs on port 7860 by default (Flask uses 5000, update if needed)
+- First deployment may take 5-10 minutes to install dependencies
+- Check Space logs if deployment fails
 
 ---
 
